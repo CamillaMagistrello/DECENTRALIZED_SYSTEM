@@ -1,0 +1,10 @@
+{
+  "name": "Phone Battery Dead",
+  "description": "Your phone dies at the worst time.",
+  "image": "ipfs://CID_phone",
+  "attributes": [
+    {"trait_type": "type", "value": "trap"},
+    {"trait_type": "luck", "value": "bad"},
+    {"trait_type": "rarity", "value": "rare"}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Everything Goes Wrong",
+  "description": "Every possible thing fails today.",
+  "image": "ipfs://CID_disaster",
+  "attributes": [
+    {"trait_type": "type", "value": "curse"},
+    {"trait_type": "luck", "value": "bad"},
+    {"trait_type": "rarity", "value": "ultra_rare"}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Sudden Rain",
+  "description": "Rain starts without warning.",
+  "image": "ipfs://CID_rain",
+  "attributes": [
+    {"trait_type": "type", "value": "event"},
+    {"trait_type": "luck", "value": "bad"},
+    {"trait_type": "rarity", "value": "rare"}
+  ]
+}

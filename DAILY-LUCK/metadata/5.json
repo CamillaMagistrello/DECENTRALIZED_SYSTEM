@@ -1,10 +1,10 @@
 {
-  "name": "It Works First Try",
-  "description": "The code runs perfectly on the first attempt. This is unnatural.",
-  "image": "ipfs://IPFS_CID_IMAGE_CODE",
+  "name": "Slow Internet",
+  "description": "Everything loads painfully slow.",
+  "image": "ipfs://CID_slow_internet",
   "attributes": [
-    {"trait_type": "type", "value": "miracle"},
-    {"trait_type": "luck", "value": "good"},
-    {"trait_type": "rarity", "value": "legendary"}
+    {"trait_type": "type", "value": "trap"},
+    {"trait_type": "luck", "value": "bad"},
+    {"trait_type": "rarity", "value": "common"}
   ]
 }

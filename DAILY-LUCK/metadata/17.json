@@ -1,0 +1,10 @@
+{
+  "name": "Lost Keys",
+  "description": "You can't find your keys.",
+  "image": "ipfs://CID_keys",
+  "attributes": [
+    {"trait_type": "type", "value": "event"},
+    {"trait_type": "luck", "value": "bad"},
+    {"trait_type": "rarity", "value": "rare"}
+  ]
+}

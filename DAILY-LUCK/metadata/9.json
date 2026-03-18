@@ -1,7 +1,7 @@
 {
-  "name": "Perfect Coffee",
-  "description": "Coffee tastes perfect.",
-  "image": "ipfs://CID_coffee",
+  "name": "Quick Lunch",
+  "description": "You eat without stress.",
+  "image": "ipfs://CID_lunch",
   "attributes": [
     {"trait_type": "type", "value": "boost"},
     {"trait_type": "luck", "value": "good"},

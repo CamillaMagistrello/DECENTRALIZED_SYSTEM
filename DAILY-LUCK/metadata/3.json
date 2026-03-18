@@ -1,9 +1,9 @@
 {
-  "name": "Late Bus",
-  "description": "The bus is late. Again. Of course.",
-  "image": "ipfs://IPFS_CID_IMAGE_BUS",
+  "name": "Bad Mood Day",
+  "description": "Everything feels slightly wrong.",
+  "image": "ipfs://CID_bad_mood",
   "attributes": [
-    {"trait_type": "type", "value": "event"},
+    {"trait_type": "type", "value": "status"},
     {"trait_type": "luck", "value": "bad"},
     {"trait_type": "rarity", "value": "common"}
   ]

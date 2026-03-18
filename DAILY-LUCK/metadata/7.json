@@ -1,10 +1,10 @@
 {
-  "name": "Productive Day",
-  "description": "You actually get things done. Unbelievable.",
-  "image": "ipfs://IPFS_CID_IMAGE_PRODUCTIVE",
+  "name": "Good Mood",
+  "description": "You feel unexpectedly positive.",
+  "image": "ipfs://CID_good_mood",
   "attributes": [
-    {"trait_type": "type", "value": "boost"},
+    {"trait_type": "type", "value": "status"},
     {"trait_type": "luck", "value": "good"},
-    {"trait_type": "rarity", "value": "ultra_rare"}
+    {"trait_type": "rarity", "value": "common"}
   ]
 }

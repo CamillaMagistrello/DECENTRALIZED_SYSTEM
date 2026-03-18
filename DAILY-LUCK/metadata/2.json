@@ -1,10 +1,10 @@
 {
-  "name": "Perfect Coffee",
-  "description": "Coffee tastes perfect. Life feels manageable.",
-  "image": "ipfs://IPFS_CID_IMAGE_COFFEE",
+  "name": "Late Bus",
+  "description": "The bus is late. Again.",
+  "image": "ipfs://CID_late_bus",
   "attributes": [
-    {"trait_type": "type", "value": "boost"},
-    {"trait_type": "luck", "value": "good"},
+    {"trait_type": "type", "value": "event"},
+    {"trait_type": "luck", "value": "bad"},
     {"trait_type": "rarity", "value": "common"}
   ]
 }

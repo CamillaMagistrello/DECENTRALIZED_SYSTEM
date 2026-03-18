@@ -1,7 +1,7 @@
 {
-  "name": "Nice Weather",
-  "description": "The weather is surprisingly good.",
-  "image": "ipfs://CID_weather",
+  "name": "Friendly Stranger",
+  "description": "Someone is unexpectedly kind.",
+  "image": "ipfs://CID_stranger",
   "attributes": [
     {"trait_type": "type", "value": "event"},
     {"trait_type": "luck", "value": "good"},
