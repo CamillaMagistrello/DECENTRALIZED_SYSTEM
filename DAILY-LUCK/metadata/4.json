@@ -1,0 +1,10 @@
+{
+  "name": "Unexpected Luck",
+  "description": "Something randomly goes right. Suspicious.",
+  "image": "ipfs://IPFS_CID_IMAGE_LUCK",
+  "attributes": [
+    {"trait_type": "type", "value": "event"},
+    {"trait_type": "luck", "value": "good"},
+    {"trait_type": "rarity", "value": "uncommon"}
+  ]
+}

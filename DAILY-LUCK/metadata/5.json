@@ -1,0 +1,10 @@
+{
+  "name": "It Works First Try",
+  "description": "The code runs perfectly on the first attempt. This is unnatural.",
+  "image": "ipfs://IPFS_CID_IMAGE_CODE",
+  "attributes": [
+    {"trait_type": "type", "value": "miracle"},
+    {"trait_type": "luck", "value": "good"},
+    {"trait_type": "rarity", "value": "legendary"}
+  ]
+}

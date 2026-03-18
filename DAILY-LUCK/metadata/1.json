@@ -1,0 +1,10 @@
+{
+  "name": "Missed Alarm",
+  "description": "You woke up late. The day starts in panic.",
+  "image": "ipfs://IPFS_CID_IMAGE_MISSED_ALARM",
+  "attributes": [
+    {"trait_type": "type", "value": "event"},
+    {"trait_type": "luck", "value": "bad"},
+    {"trait_type": "rarity", "value": "common"}
+  ]
+}

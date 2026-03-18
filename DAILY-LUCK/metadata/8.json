@@ -1,0 +1,10 @@
+{
+  "name": "3 Hours Scrolling",
+  "description": "You opened your phone for 5 minutes. It has been 3 hours.",
+  "image": "ipfs://IPFS_CID_IMAGE_SCROLL",
+  "attributes": [
+    {"trait_type": "type", "value": "trap"},
+    {"trait_type": "luck", "value": "bad"},
+    {"trait_type": "rarity", "value": "common"}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Bad Mood Day",
+  "description": "Nothing is technically wrong, but everything feels wrong.",
+  "image": "ipfs://IPFS_CID_IMAGE_MOOD",
+  "attributes": [
+    {"trait_type": "type", "value": "status"},
+    {"trait_type": "luck", "value": "bad"},
+    {"trait_type": "rarity", "value": "common"}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Late Bus",
+  "description": "The bus is late. Again. Of course.",
+  "image": "ipfs://IPFS_CID_IMAGE_BUS",
+  "attributes": [
+    {"trait_type": "type", "value": "event"},
+    {"trait_type": "luck", "value": "bad"},
+    {"trait_type": "rarity", "value": "common"}
+  ]
+}

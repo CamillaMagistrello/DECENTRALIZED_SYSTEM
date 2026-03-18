@@ -1,0 +1,10 @@
+{
+  "name": "Productive Day",
+  "description": "You actually get things done. Unbelievable.",
+  "image": "ipfs://IPFS_CID_IMAGE_PRODUCTIVE",
+  "attributes": [
+    {"trait_type": "type", "value": "boost"},
+    {"trait_type": "luck", "value": "good"},
+    {"trait_type": "rarity", "value": "ultra_rare"}
+  ]
+}
