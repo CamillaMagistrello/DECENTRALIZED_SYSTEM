@@ -1,7 +1,7 @@
 {
-  "name": "Lost Keys",
-  "description": "You can't find your keys.",
-  "image": "ipfs://CID/17.png",
+  "name": "Slow Queue",
+  "description": "The line in front of you moves at a glacial pace. Patience is tested.",
+  "image": "ipfs://CID/108.png",
   "attributes": [
     {"trait_type": "type", "value": "event"},
     {"trait_type": "luck", "value": "bad"},
