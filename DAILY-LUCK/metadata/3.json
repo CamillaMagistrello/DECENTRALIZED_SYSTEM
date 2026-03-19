@@ -1,7 +1,7 @@
 {
   "name": "Bad Mood Day",
   "description": "Everything feels slightly wrong.",
-  "image": "ipfs://CID_bad_mood",
+  "image": "ipfs://CID/3.png",
   "attributes": [
     {"trait_type": "type", "value": "status"},
     {"trait_type": "luck", "value": "bad"},

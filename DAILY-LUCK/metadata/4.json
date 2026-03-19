@@ -1,7 +1,7 @@
 {
   "name": "3 Hours Scrolling",
   "description": "You lost track of time on your phone.",
-  "image": "ipfs://CID_scrolling",
+  "image": "ipfs://CID/4.png",
   "attributes": [
     {"trait_type": "type", "value": "trap"},
     {"trait_type": "luck", "value": "bad"},

@@ -1,7 +1,7 @@
 {
   "name": "Missed Deadline",
   "description": "You forgot something important.",
-  "image": "ipfs://CID_deadline",
+  "image": "ipfs://CID/15.png",
   "attributes": [
     {"trait_type": "type", "value": "event"},
     {"trait_type": "luck", "value": "bad"},

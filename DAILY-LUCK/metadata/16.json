@@ -1,9 +1,9 @@
 {
-  "name": "Phone Battery Dead",
-  "description": "Your phone dies at the worst time.",
-  "image": "ipfs://CID_phone",
+  "name": "Emergency Call",
+  "description": "You have to deal with a huge problem before breakfast.",
+  "image": "ipfs://CID/16.png",
   "attributes": [
-    {"trait_type": "type", "value": "trap"},
+    {"trait_type": "type", "value": "event"},
     {"trait_type": "luck", "value": "bad"},
     {"trait_type": "rarity", "value": "rare"}
   ]

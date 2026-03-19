@@ -1,7 +1,7 @@
 {
   "name": "It Works First Try",
   "description": "The code runs perfectly. Impossible.",
-  "image": "ipfs://CID_code",
+  "image": "ipfs://CID/19.png",
   "attributes": [
     {"trait_type": "type", "value": "miracle"},
     {"trait_type": "luck", "value": "good"},

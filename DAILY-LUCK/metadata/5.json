@@ -1,7 +1,7 @@
 {
   "name": "Slow Internet",
   "description": "Everything loads painfully slow.",
-  "image": "ipfs://CID_slow_internet",
+  "image": "ipfs://CID/5.png",
   "attributes": [
     {"trait_type": "type", "value": "trap"},
     {"trait_type": "luck", "value": "bad"},

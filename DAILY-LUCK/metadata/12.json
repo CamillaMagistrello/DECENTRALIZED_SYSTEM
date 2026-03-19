@@ -1,7 +1,7 @@
 {
   "name": "Free Coffee",
   "description": "You get coffee for free.",
-  "image": "ipfs://CID_free_coffee",
+  "image": "ipfs://CID/12.png",
   "attributes": [
     {"trait_type": "type", "value": "boost"},
     {"trait_type": "luck", "value": "good"},

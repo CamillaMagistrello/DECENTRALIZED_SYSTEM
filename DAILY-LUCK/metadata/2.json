@@ -1,7 +1,7 @@
 {
-  "name": "Late Bus",
-  "description": "The bus is late. Again.",
-  "image": "ipfs://CID_late_bus",
+  "name": "Bus Full",
+  "description": "The bus is impossibly full. Survival mode activated.",
+  "image": "ipfs://CID/2.png",
   "attributes": [
     {"trait_type": "type", "value": "event"},
     {"trait_type": "luck", "value": "bad"},

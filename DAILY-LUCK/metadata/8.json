@@ -1,9 +1,9 @@
 {
-  "name": "Nice Weather",
-  "description": "The weather is surprisingly good.",
-  "image": "ipfs://CID_weather",
+  "name": "Perfect Weather",
+  "description": "The sun shines, wind is perfect, and the ride is flawless.",
+  "image": "ipfs://CID/8.png",
   "attributes": [
-    {"trait_type": "type", "value": "event"},
+    {"trait_type": "type", "value": "boost"},
     {"trait_type": "luck", "value": "good"},
     {"trait_type": "rarity", "value": "common"}
   ]

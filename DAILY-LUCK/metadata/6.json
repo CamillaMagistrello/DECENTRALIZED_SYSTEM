@@ -1,7 +1,7 @@
 {
   "name": "Perfect Coffee",
   "description": "Coffee tastes perfect.",
-  "image": "ipfs://CID_coffee",
+  "image": "ipfs://CID/6.png",
   "attributes": [
     {"trait_type": "type", "value": "boost"},
     {"trait_type": "luck", "value": "good"},

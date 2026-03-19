@@ -1,7 +1,7 @@
 {
-  "name": "Everything Goes Wrong",
-  "description": "Every possible thing fails today.",
-  "image": "ipfs://CID_disaster",
+  "name": "Final Destination Day",
+  "description": "Every possible thing fails in sequence.",
+  "image": "ipfs://CID/20.png",
   "attributes": [
     {"trait_type": "type", "value": "curse"},
     {"trait_type": "luck", "value": "bad"},

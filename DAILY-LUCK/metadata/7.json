@@ -1,7 +1,7 @@
 {
-  "name": "Good Mood",
-  "description": "You feel unexpectedly positive.",
-  "image": "ipfs://CID_good_mood",
+  "name": "Sudden Inspiration",
+  "description": "An idea hits you out of nowhere. Everything feels possible.",
+  "image": "ipfs://CID/7.png",
   "attributes": [
     {"trait_type": "type", "value": "status"},
     {"trait_type": "luck", "value": "good"},

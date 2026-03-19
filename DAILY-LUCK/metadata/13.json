@@ -1,7 +1,7 @@
 {
   "name": "Lecture Cancelled",
   "description": "Class is cancelled unexpectedly.",
-  "image": "ipfs://CID_cancelled",
+  "image": "ipfs://CID/1.png",
   "attributes": [
     {"trait_type": "type", "value": "event"},
     {"trait_type": "luck", "value": "good"},

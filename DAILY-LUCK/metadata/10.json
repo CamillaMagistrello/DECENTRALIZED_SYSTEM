@@ -1,10 +1,10 @@
 {
-  "name": "Friendly Stranger",
-  "description": "Someone is unexpectedly kind.",
-  "image": "ipfs://CID_stranger",
+  "name": "Wrongly Marked Departure",
+  "description": "You mark the wrong day for the trip and everyone ends up driving 9 hours for nothing.",
+  "image": "ipfs://CID/10.png",
   "attributes": [
     {"trait_type": "type", "value": "event"},
-    {"trait_type": "luck", "value": "good"},
+    {"trait_type": "luck", "value": "bad"},
     {"trait_type": "rarity", "value": "common"}
   ]
 }
