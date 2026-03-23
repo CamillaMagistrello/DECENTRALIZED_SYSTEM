@@ -27,10 +27,9 @@ contract DailyLuck is ERC721URIStorage, Ownable {
 
     function getRandomFortune() internal view returns (uint256) {
         uint256 rand = getRandom(100);
-
-        if (rand < 60) return 0;
-        else if (rand < 90) return 1;
-        else return 2;
+        if (rand < 60) return 0; // common
+        else if (rand < 90) return 1; // rare
+        else return 2; // ultra rare
     }
 
     function buyFortune() public payable {
