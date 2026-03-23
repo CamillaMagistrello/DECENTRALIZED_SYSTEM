@@ -9,7 +9,6 @@ contract DailyLuck is ERC721URIStorage, Ownable {
     uint256 public nextTokenId;
     uint256 public mintPrice = 0.01 ether;
 
-    // mapping fortuna -> URI metadata
     mapping(uint256 => string) public fortuneURIs;
 
     constructor() ERC721("DailyLuck", "LUCK") {}
@@ -29,9 +28,9 @@ contract DailyLuck is ERC721URIStorage, Ownable {
     function getRandomFortune() internal view returns (uint256) {
         uint256 rand = getRandom(100);
 
-        if (rand < 60) return 0; // comune
-        else if (rand < 90) return 1; // raro
-        else return 2; // ultra raro
+        if (rand < 60) return 0;
+        else if (rand < 90) return 1;
+        else return 2;
     }
 
     function buyFortune() public payable {
