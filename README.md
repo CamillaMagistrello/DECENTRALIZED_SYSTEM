@@ -101,10 +101,10 @@ No traditional database is used.
 * Solidity
 * Hardhat
 * OpenZeppelin Contracts
-* IPFS (Pinata or similar)
+* IPFS (Pinata)
 * Ethers.js
 * JavaScript (Node.js scripts)
-* HTML / React (planned frontend)
+* React
 
 ---
 
