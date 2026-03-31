@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract DailyLuck is ERC721URIStorage, Ownable {
+contract DailyLuckShuffle is ERC721URIStorage, Ownable {
 
     uint256 public nextNFTId;
     uint256 public nftMintPrice = 0.01 ether;
@@ -15,28 +15,69 @@ contract DailyLuck is ERC721URIStorage, Ownable {
     // Maps rarity -> list of metadata URIs (IPFS JSONs)
     mapping(string => string[]) public metadataURIsByRarity;
 
-    constructor() ERC721("DailyLuck", "LUCK") {
+    // Shuffled arrays for each rarity
+    mapping(string => string[]) private shuffledURIs;
+    mapping(string => uint256) private shufflePointer;
 
+    constructor() ERC721("DailyLuckShuffle", "LUCK") {
         // ===== COMMON (1–11) =====
         for (uint256 i = 1; i <= 11; i++) {
             metadataURIsByRarity["common"].push(
                 string(abi.encodePacked("ipfs://CID/", uint2str(i), ".json"))
             );
         }
-
         // ===== RARE (12–18) =====
         for (uint256 i = 12; i <= 18; i++) {
             metadataURIsByRarity["rare"].push(
                 string(abi.encodePacked("ipfs://CID/", uint2str(i), ".json"))
             );
         }
-
         // ===== ULTRA RARE (19–20) =====
         for (uint256 i = 19; i <= 20; i++) {
             metadataURIsByRarity["ultra_rare"].push(
                 string(abi.encodePacked("ipfs://CID/", uint2str(i), ".json"))
             );
         }
+
+        // Initialize shuffle arrays
+        _initShuffle("common");
+        _initShuffle("rare");
+        _initShuffle("ultra_rare");
+    }
+
+    // Initialize shuffled array for a rarity
+    function _initShuffle(string memory rarity) internal {
+        string[] storage pool = metadataURIsByRarity[rarity];
+        string[] storage shuffleArray = shuffledURIs[rarity];
+
+        for (uint256 i = 0; i < pool.length; i++) {
+            shuffleArray.push(pool[i]);
+        }
+        _shuffleArray(shuffleArray);
+        shufflePointer[rarity] = 0;
+    }
+
+    // Fisher–Yates shuffle
+    function _shuffleArray(string[] storage array) internal {
+        for (uint i = 0; i < array.length; i++) {
+            uint j = i + uint256(keccak256(abi.encodePacked(block.timestamp, block.prevrandao, i))) % (array.length - i);
+            string memory temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
+    // Picks a “shuffled” metadata URI from the pool
+    function selectShuffledMetadata(string memory rarity) internal returns (string memory) {
+        string[] storage shuffleArray = shuffledURIs[rarity];
+        uint256 index = shufflePointer[rarity];
+
+        string memory selectedURI = shuffleArray[index];
+
+        // Move pointer forward; loop back if at end
+        shufflePointer[rarity] = (index + 1) % shuffleArray.length;
+
+        return selectedURI;
     }
 
     function generateRandomNumber(uint256 max) internal view returns (uint256) {
@@ -51,16 +92,7 @@ contract DailyLuck is ERC721URIStorage, Ownable {
         else return "ultra_rare";                         // 5% chance
     }
 
-    // Picks a random metadata URI from the given rarity pool
-    function selectRandomMetadata(string memory rarity) internal view returns (string memory) {
-        string[] memory metadataPool = metadataURIsByRarity[rarity];
-        require(metadataPool.length > 0, "No metadata available for this rarity");
-
-        uint256 randomIndex = generateRandomNumber(metadataPool.length);
-        return metadataPool[randomIndex];
-    }
-
-    // Mint a new NFT with random rarity and metadata
+    // Mint a new NFT
     function mintDailyLuckNFT() public payable {
         require(msg.value >= nftMintPrice, "Not enough ETH to mint NFT");
 
@@ -68,7 +100,8 @@ contract DailyLuck is ERC721URIStorage, Ownable {
         nextNFTId++;
 
         string memory rarity = selectRandomRarity();
-        string memory metadataURI = selectRandomMetadata(rarity);
+        string memory metadataURI = selectShuffledMetadata(rarity);
+
         nftRarity[nftId] = rarity;
         _safeMint(msg.sender, nftId);
         _setTokenURI(nftId, metadataURI);
