@@ -1,7 +1,7 @@
 {
   "name": "Found Money",
   "description": "You find money on the ground.",
-  "image": "ipfs://CID/14.png",
+  "image": "ipfs://bafkreie6avskscicir74ua3m2k2fdguhfcuw6befi4aunhtwcrzfkkgxn4/14.png",
   "attributes": [
     {"trait_type": "type", "value": "event"},
     {"trait_type": "luck", "value": "good"},

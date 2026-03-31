@@ -1,7 +1,7 @@
 {
   "name": "Quick Lunch",
   "description": "You eat without stress.",
-  "image": "ipfs://CID/9.png",
+  "image": "ipfs://bafybeiatyam3uqwqnlmkpbdgb5d5n2s7gmbyspef2ridl2hympgy46ie7e/9.png",
   "attributes": [
     {"trait_type": "type", "value": "boost"},
     {"trait_type": "luck", "value": "good"},

@@ -1,7 +1,7 @@
 {
   "name": "Sudden Rain",
   "description": "Rain starts without warning.",
-  "image": "ipfs://CID/18.png",
+  "image": "ipfs://bafybeic3hpbmeypsnwp6upyjiiiblycn4h3ubuyfj2ogv6uunf3jm2uyxi/18.png",
   "attributes": [
     {"trait_type": "type", "value": "event"},
     {"trait_type": "luck", "value": "bad"},

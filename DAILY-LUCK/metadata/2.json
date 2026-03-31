@@ -1,7 +1,7 @@
 {
   "name": "Bus Full",
   "description": "The bus is impossibly full. Survival mode activated.",
-  "image": "ipfs://CID/2.png",
+  "image": "ipfs://bafkreibxgpivn6r243xumdufognkhdtkdjludib6x22szybfg7s7n6rc4m/2.png",
   "attributes": [
     {"trait_type": "type", "value": "event"},
     {"trait_type": "luck", "value": "bad"},

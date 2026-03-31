@@ -1,7 +1,7 @@
 {
   "name": "Sudden Inspiration",
   "description": "An idea hits you out of nowhere. Everything feels possible.",
-  "image": "ipfs://CID/7.png",
+  "image": "ipfs://bafkreichrird5ybxjmvrmkrqxhnbkqgorzzod2wbbze5jyw4hhcgrdjede/7.png",
   "attributes": [
     {"trait_type": "type", "value": "status"},
     {"trait_type": "luck", "value": "good"},

@@ -1,7 +1,7 @@
 {
   "name": "Emergency Call",
   "description": "You have to deal with a huge problem before breakfast.",
-  "image": "ipfs://CID/16.png",
+  "image": "ipfs://bafybeig5it5tlmnevpcchss63pdso6irws4gbks2xexho5zb4gubkqpobe/16.png",
   "attributes": [
     {"trait_type": "type", "value": "event"},
     {"trait_type": "luck", "value": "bad"},

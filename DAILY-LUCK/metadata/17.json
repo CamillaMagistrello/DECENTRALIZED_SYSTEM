@@ -1,7 +1,7 @@
 {
   "name": "Slow Queue",
   "description": "The line in front of you moves at a glacial pace. Patience is tested.",
-  "image": "ipfs://CID/108.png",
+  "image": "ipfs://bafkreialrhhjfu5mdenj3ohbmstsbmrlkjjc67bc3h3io6ytafj72x5f34/17.png",
   "attributes": [
     {"trait_type": "type", "value": "event"},
     {"trait_type": "luck", "value": "bad"},

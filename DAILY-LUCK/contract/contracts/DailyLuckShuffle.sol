@@ -20,22 +20,24 @@ contract DailyLuckShuffle is ERC721URIStorage, Ownable {
     mapping(string => uint256) private shufflePointer;
 
     constructor() ERC721("DailyLuckShuffle", "LUCK") {
+
+        string memory baseURI = string(abi.encodePacked("ipfs://bafybeidghxrekbru4bbtn7zzyxbiors44jrxjqt7fmlesip6mqd23h4imm/"));
         // ===== COMMON (1–11) =====
         for (uint256 i = 1; i <= 11; i++) {
             metadataURIsByRarity["common"].push(
-                string(abi.encodePacked("ipfs://CID/", uint2str(i), ".json"))
+                string(abi.encodePacked(baseURI, uint2str(i), ".json"))
             );
         }
         // ===== RARE (12–18) =====
         for (uint256 i = 12; i <= 18; i++) {
             metadataURIsByRarity["rare"].push(
-                string(abi.encodePacked("ipfs://CID/", uint2str(i), ".json"))
+                string(abi.encodePacked(baseURI, uint2str(i), ".json"))
             );
         }
         // ===== ULTRA RARE (19–20) =====
         for (uint256 i = 19; i <= 20; i++) {
             metadataURIsByRarity["ultra_rare"].push(
-                string(abi.encodePacked("ipfs://CID/", uint2str(i), ".json"))
+                string(abi.encodePacked(baseURI, uint2str(i), ".json"))
             );
         }
 

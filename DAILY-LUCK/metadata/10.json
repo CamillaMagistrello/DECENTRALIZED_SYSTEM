@@ -1,7 +1,7 @@
 {
   "name": "Wrongly Marked Departure",
   "description": "You mark the wrong day for the trip and everyone ends up driving 9 hours for nothing.",
-  "image": "ipfs://CID/10.png",
+  "image": "ipfs://bafkreib4sax5c7duf6l6vle6qvokijkjfhvufect3xzthbrj6vu2s57eyy/10.png",
   "attributes": [
     {"trait_type": "type", "value": "event"},
     {"trait_type": "luck", "value": "bad"},

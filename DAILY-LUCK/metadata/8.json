@@ -1,7 +1,7 @@
 {
   "name": "Perfect Weather",
   "description": "The sun shines, wind is perfect, and the ride is flawless.",
-  "image": "ipfs://CID/8.png",
+  "image": "ipfs://bafybeiamxqrnar7xy2wyc6b6aoo73pzxtwxnan55puutjimrobhnt65qwm/8.png",
   "attributes": [
     {"trait_type": "type", "value": "boost"},
     {"trait_type": "luck", "value": "good"},
