@@ -20,7 +20,7 @@ Users can collect NFTs and try to obtain all possible outcomes, introducing a si
 ## 🚀 Features
 
 * ERC-721 NFT smart contract
-* Random NFT assignment (pseudo-random on-chain)
+* On-chain pseudo-random NFT assignment  
 * Probability-based rarity system
 * Paid minting (ETH required)
 * Metadata and images stored on IPFS
@@ -121,28 +121,6 @@ npx hardhat node
 ```
 npx hardhat run scripts/deploy.js --network localhost
 ```
-
-### 3. Copy contract address and update:
-
-```
-/scripts/setFortunes.js
-```
-
-### 4. Upload metadata
-
-```
-npx hardhat run scripts/setFortunes.js --network localhost
-```
-
-### 5. Test minting
-
-Use Hardhat console:
-
-```
-npx hardhat console --network localhost
-```
-
----
 
 ## 🌍 Deployment
 

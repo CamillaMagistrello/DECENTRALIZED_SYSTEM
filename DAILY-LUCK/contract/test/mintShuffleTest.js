@@ -5,11 +5,17 @@ async function main() {
     const [user1, user2, user3] = await ethers.getSigners();
     const users = [user1, user2, user3];
 
+    /*
     console.log("Deploying DailyLuck contract...");
     const DailyLuck = await ethers.getContractFactory("DailyLuck");
     const dailyLuck = await DailyLuck.deploy();
     await dailyLuck.waitForDeployment();
     console.log("DailyLuck deployed to:", dailyLuck.target);
+    */
+
+    const contractAddress = "0x99DDD86C93737D2E473f4d2d0696eAF299B91c39";
+    const DailyLuck = await ethers.getContractFactory("DailyLuck");
+    const dailyLuck = await DailyLuck.attach(contractAddress);
 
     const provider = ethers.provider;
 
