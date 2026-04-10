@@ -44,7 +44,7 @@ function Header({ toggleTheme, mode, page, setPage }) {
         <AppBar position="static" elevation={0} sx={{ background: theme.palette.custom.header.background,
         color: theme.palette.custom.header.text }} >
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Box sx={{ display: "flex", alignItems: "center", cursor: "pointer", gap: 1 }} onClick={() => setPage("home")}>
                     <Box component="img" src={cookieImg} alt="cookie"
                         sx={{ width: 35, height: 35, objectFit: "contain", transition: "transform 0.3s ease, filter 0.3s ease",
                             "&:hover": {

@@ -32,7 +32,7 @@ function Home({ setPage }) {
                         </Typography>
                     </Box>
                     <Typography variant="h6" sx={{ opacity: 0.7 }}>
-                        Open a cookie. Discover your fate. No refunds.
+                        Open a cookie and discover your fate. Good luck… you might need it.
                     </Typography>
                     <Button variant="contained" size="large" sx={{ mt: 3, px: 4, py: 1.5, borderRadius: 3 }}
                     onClick={() => setPage("mint")}>
@@ -45,24 +45,29 @@ function Home({ setPage }) {
                         <Typography variant="h6" fontWeight="bold" gutterBottom>
                             🎴 What is this?
                         </Typography>
-                        <Typography sx={{ opacity: 0.8 }}>
-                            A blockchain-based fortune cookie system where every mint creates a unique NFT outcome.
+                        <Typography sx={{ opacity: 0.85, mb: 1 }}>
+                            A simple cookie. A random fate.
+                        </Typography>
+                        <Typography sx={{ opacity: 0.75 }}>
+                            Each mint reveals a unique outcome — fortune or misfortune, fully unpredictable.
+                        </Typography>
+                        <Typography sx={{ opacity: 0.75 }}>
+                            No patterns. No guarantees. Just probability doing its thing.
                         </Typography>
                     </Paper>
+
                     <Paper sx={{ p: 3, borderRadius: 3 }}>
                         <Typography variant="h6" fontWeight="bold" gutterBottom>
-                            🧠 Ownership
+                            🎮 Collect them all
                         </Typography>
-                        <Typography sx={{ opacity: 0.8 }}>
-                            Once minted, your result is permanent and cannot be changed.
+                        <Typography sx={{ opacity: 0.75, mb: 1 }}>
+                            Every outcome belongs to a rarity tier.
                         </Typography>
-                    </Paper>
-                    <Paper sx={{ p: 3, borderRadius: 3 }}>
-                        <Typography variant="h6" fontWeight="bold" gutterBottom>
-                            🎮 Collect
+                        <Typography sx={{ opacity: 0.75 }}>
+                            Common, rare, ultra rare — each with its own story, some lucky, some… less so.
                         </Typography>
-                        <Typography sx={{ opacity: 0.8 }}>
-                            Duplicate NFTs are part of the game. Collect them, trade them, flex them.
+                        <Typography sx={{ opacity: 0.75 }}>
+                            The rarer it is, the less likely you’ll ever see it twice.
                         </Typography>
                     </Paper>
                 </Stack>
