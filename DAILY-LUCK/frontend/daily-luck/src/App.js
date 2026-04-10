@@ -1,24 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import { useMemo, useState } from "react";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import { getTheme } from "./utils/theme";
+
+import Header from "./components/common/Header";
+import Home from "./components/Home";
+import Mint from "./components/Mint";
 
 function App() {
+  const [mode, setMode] = useState("dark");
+  const [page, setPage] = useState("home");
+
+  const theme = useMemo(() => getTheme(mode), [mode]);
+
+  const toggleTheme = () => {
+    setMode((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+
+      <Header mode={mode} toggleTheme={toggleTheme} page={page} setPage={setPage} />
+      {page === "home" && <Home page={page} setPage={setPage}/>}
+      {page === "nfts" && <div>My NFTs page</div>}
+      {page === "mint" && <Mint/>}
+    </ThemeProvider>
   );
 }
 
