@@ -1,88 +1,139 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract DailyLuck is ERC721URIStorage, Ownable {
+contract DailyLuck is ERC721, Ownable {
 
     uint256 public nextNFTId;
     uint256 public nftMintPrice = 0.01 ether;
 
-    // Stores the rarity of each minted NFT
     mapping(uint256 => string) public nftRarity;
+    mapping(uint256 => string) private _tokenURIs;
+    mapping(address => uint256[]) private _ownedTokens;
 
-    // Maps rarity -> list of metadata URIs (IPFS JSONs)
-    mapping(string => string[]) public metadataURIsByRarity;
+    mapping(string => string[]) private metadataURIsByRarity;
+    mapping(string => string[]) private shuffledURIs;
+    mapping(string => uint256) private pointerByRarity;
 
-    constructor() ERC721("DailyLuck", "LUCK") {
+    constructor() ERC721("DailyLuck", "LUCK") Ownable() {
 
-        // ===== COMMON (1–11) =====
+        string memory baseURI = "ipfs://bafybeidghxrekbru4bbtn7zzyxbiors44jrxjqt7fmlesip6mqd23h4imm/";
+
+        // COMMON
         for (uint256 i = 1; i <= 11; i++) {
             metadataURIsByRarity["common"].push(
-                string(abi.encodePacked("ipfs://CID/", uint2str(i), ".json"))
+                string(abi.encodePacked(baseURI, uint2str(i), ".json"))
             );
         }
 
-        // ===== RARE (12–18) =====
+        // RARE
         for (uint256 i = 12; i <= 18; i++) {
             metadataURIsByRarity["rare"].push(
-                string(abi.encodePacked("ipfs://CID/", uint2str(i), ".json"))
+                string(abi.encodePacked(baseURI, uint2str(i), ".json"))
             );
         }
 
-        // ===== ULTRA RARE (19–20) =====
+        // ULTRA RARE
         for (uint256 i = 19; i <= 20; i++) {
             metadataURIsByRarity["ultra_rare"].push(
-                string(abi.encodePacked("ipfs://CID/", uint2str(i), ".json"))
+                string(abi.encodePacked(baseURI, uint2str(i), ".json"))
             );
         }
+
+        _initShuffle("common");
+        _initShuffle("rare");
+        _initShuffle("ultra_rare");
     }
 
-    function generateRandomNumber(uint256 max) internal view returns (uint256) {
-        return uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, block.prevrandao))) % max;
-    }
-
-    function selectRandomRarity() internal view returns (string memory) {
-        uint256 randomPercentage = generateRandomNumber(100);
-
-        if (randomPercentage < 85) return "common";       // 85% chance
-        else if (randomPercentage < 95) return "rare";    // 10% chance
-        else return "ultra_rare";                         // 5% chance
-    }
-
-    // Picks a random metadata URI from the given rarity pool
-    function selectRandomMetadata(string memory rarity) internal view returns (string memory) {
-        string[] memory metadataPool = metadataURIsByRarity[rarity];
-        require(metadataPool.length > 0, "No metadata available for this rarity");
-
-        uint256 randomIndex = generateRandomNumber(metadataPool.length);
-        return metadataPool[randomIndex];
-    }
-
-    // Mint a new NFT with random rarity and metadata
     function mintDailyLuckNFT() public payable {
-        require(msg.value >= nftMintPrice, "Not enough ETH to mint NFT");
+        require(msg.value >= nftMintPrice, "Not enough ETH");
 
-        uint256 nftId = nextNFTId;
+        uint256 id = nextNFTId;
         nextNFTId++;
 
         string memory rarity = selectRandomRarity();
-        string memory metadataURI = selectRandomMetadata(rarity);
-        nftRarity[nftId] = rarity;
-        _safeMint(msg.sender, nftId);
-        _setTokenURI(nftId, metadataURI);
+        string memory uri = selectMetadata(rarity);
+
+        nftRarity[id] = rarity;
+        _tokenURIs[id] = uri;
+        _ownedTokens[msg.sender].push(id);
+
+        _safeMint(msg.sender, id);
+    }
+
+    function selectMetadata(string memory rarity) internal returns (string memory) {
+        string[] storage arr = shuffledURIs[rarity];
+
+        require(arr.length > 0, "Empty rarity pool");
+
+        uint256 pointer = pointerByRarity[rarity];
+        string memory uri = arr[pointer];
+
+        pointerByRarity[rarity] = (pointer + 1) % arr.length;
+
+        return uri;
+    }
+
+    function _initShuffle(string memory rarity) internal {
+        string[] storage pool = metadataURIsByRarity[rarity];
+
+        require(pool.length > 0, "No metadata for rarity");
+
+        string[] memory temp = new string[](pool.length);
+
+        for (uint256 i = 0; i < pool.length; i++) {
+            temp[i] = pool[i];
+        }
+
+        // Fisher-Yates deterministic-ish shuffle (safe for testnet use)
+        for (uint256 i = 0; i < temp.length; i++) {
+            uint256 j = uint256(
+                keccak256(abi.encodePacked(block.prevrandao, i, rarity))
+            ) % temp.length;
+
+            (temp[i], temp[j]) = (temp[j], temp[i]);
+        }
+
+        delete shuffledURIs[rarity];
+
+        for (uint256 i = 0; i < temp.length; i++) {
+            shuffledURIs[rarity].push(temp[i]);
+        }
+
+        pointerByRarity[rarity] = 0;
+    }
+
+    function selectRandomRarity() internal view returns (string memory) {
+        uint256 r = uint256(
+            keccak256(
+                abi.encodePacked(block.prevrandao, msg.sender, nextNFTId)
+            )
+        ) % 100;
+
+        if (r < 85) return "common";
+        else if (r < 95) return "rare";
+        else return "ultra_rare";
+    }
+
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        return _tokenURIs[tokenId];
+    }
+
+    function getUserNFTs(address user) public view returns (uint256[] memory) {
+        return _ownedTokens[user];
     }
 
     function withdrawFunds() public onlyOwner {
         (bool success, ) = owner().call{value: address(this).balance}("");
-        require(success, "Withdrawal failed");
+        require(success, "Withdraw failed");
     }
 
-    function uint2str(uint256 _value) internal pure returns (string memory) {
-        if (_value == 0) return "0";
+    function uint2str(uint256 value) internal pure returns (string memory) {
+        if (value == 0) return "0";
 
-        uint256 temp = _value;
+        uint256 temp = value;
         uint256 digits;
 
         while (temp != 0) {
@@ -91,12 +142,11 @@ contract DailyLuck is ERC721URIStorage, Ownable {
         }
 
         bytes memory buffer = new bytes(digits);
-        uint256 index = digits;
 
-        while (_value != 0) {
-            index = index - 1;
-            buffer[index] = bytes1(uint8(48 + _value % 10));
-            _value /= 10;
+        while (value != 0) {
+            digits--;
+            buffer[digits] = bytes1(uint8(48 + value % 10));
+            value /= 10;
         }
 
         return string(buffer);

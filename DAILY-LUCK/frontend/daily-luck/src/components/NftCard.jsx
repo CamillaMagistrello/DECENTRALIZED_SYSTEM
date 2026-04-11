@@ -2,15 +2,25 @@ import { Paper, Box, Typography } from "@mui/material";
 import cookieImg from "../images/close.png";
 
 function NftCard({ nft, unlocked, index, onClick }) {
+    const rarity = nft?.rarity;
+
+    const getGlow = () => {
+        if (!unlocked) return "none";
+        if (rarity === "ultra_rare") return "0 0 30px rgba(255, 215, 0, 0.8)";
+        if (rarity === "rare") return "0 0 25px rgba(0, 170, 255, 0.7)";
+        return "0 0 12px rgba(255,255,255,0.25)";
+    };
+
     return (
         <Paper
             onClick={() => unlocked && onClick?.(nft, index)}
-            elevation={3}
+            elevation={4}
             sx={{
-                p: 2,
-                borderRadius: 3,
-                height: 180,
+                p: 3,
+                borderRadius: 4,
+                height: 380,
                 width: "100%",
+                maxWidth: "360px",
                 cursor: unlocked ? "pointer" : "default",
                 position: "relative",
                 overflow: "hidden",
@@ -26,31 +36,51 @@ function NftCard({ nft, unlocked, index, onClick }) {
                 filter: unlocked ? "none" : "grayscale(1)",
                 opacity: unlocked ? 1 : 0.6,
 
-                transition: "all 0.25s ease",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
 
-                "&:hover": unlocked
+                boxShadow: getGlow(),
+
+                "&:hover": {
+                    transform: "scale(1.08)",
+                    boxShadow: `${getGlow()}, 0 30px 70px rgba(0,0,0,0.55)`
+                },
+
+                "&::before": unlocked
                     ? {
-                          transform: "scale(1.04)",
-                          boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
+                          content: '""',
+                          position: "absolute",
+                          top: 0,
+                          left: "-75%",
+                          width: "50%",
+                          height: "100%",
+                          background:
+                              "linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent)",
+                          transform: "skewX(-25deg)",
+                          transition: "0.6s"
                       }
                     : {},
+
+                "&:hover::before": unlocked
+                    ? {
+                          left: "130%"
+                      }
+                    : {}
             }}
         >
-            <Box sx={{ height: 90, display: "flex", alignItems: "center" }}>
+            <Box sx={{ height: 180, display: "flex", alignItems: "center" }}>
                 {unlocked ? (
                     <Box
                         component="img"
                         src={nft.image || cookieImg}
                         alt={nft.title}
                         sx={{
-                            maxHeight: 80,
+                            maxHeight: 170,
                             maxWidth: "100%",
-                            objectFit: "contain",
-                            transition: "0.25s ease",
+                            objectFit: "contain"
                         }}
                     />
                 ) : (
-                    <Typography fontSize={32}>🔒</Typography>
+                    <Typography fontSize={44}>🔒</Typography>
                 )}
             </Box>
 

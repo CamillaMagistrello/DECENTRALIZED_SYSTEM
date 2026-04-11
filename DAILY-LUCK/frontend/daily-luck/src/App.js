@@ -5,7 +5,7 @@ import { getTheme } from "./utils/theme";
 import Header from "./components/common/Header";
 import Home from "./components/Home";
 import Mint from "./components/Mint";
-import Nft from "./components/Nft";
+import NftPage from "./components/NftPage";
 
 function App() {
   const [mode, setMode] = useState("dark");
@@ -23,7 +23,7 @@ function App() {
 
       <Header mode={mode} toggleTheme={toggleTheme} page={page} setPage={setPage} />
       {page === "home" && <Home page={page} setPage={setPage}/>}
-      {page === "nfts" && <Nft/>}
+      {page === "nfts" && <NftPage/>}
       {page === "mint" && <Mint/>}
     </ThemeProvider>
   );
