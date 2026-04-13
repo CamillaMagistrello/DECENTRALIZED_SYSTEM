@@ -1,57 +1,88 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import * as Constants from "./Constants";
-import contractAbi from "./abi.json";
+import contractAbi from "./contract.json";
 
-export default function NftUtils(account) {
+export default function useNfts(account) {
     const [nfts, setNfts] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!account) return;
 
         const load = async () => {
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const contract = new ethers.Contract(
-                Constants.CONTRACT,
-                contractAbi,
-                provider
-            );
+            try {
+                setLoading(true);
+                const chainId = await window.ethereum.request({
+                    method: "wallet_switchEthereumChain",
+                    params: [{ chainId: "0xaa36a7" }], // Sepolia
+                });
+                const provider = new ethers.BrowserProvider(window.ethereum);
+                const network = await provider.getNetwork();
+                console.log("network:", network);
+                const signer = await provider.getSigner();
+                const contract = new ethers.Contract(
+                    Constants.CONTRACT,
+                    contractAbi,
+                    signer
+                );
 
-            const balance = await contract.balanceOf(account);
+                console.log("Account:", account);
+                
 
-            const items = [];
+                const ids = await contract.getUserNFTs(account);
+                console.log("NFT IDs:", ids);
 
-            for (let i = 0; i < Number(balance); i++) {
-                const tokenId = await contract.tokenOfOwnerByIndex(account, i);
-
-                let tokenURI = await contract.tokenURI(tokenId);
-
-                if (tokenURI.startsWith("ipfs://")) {
-                    tokenURI = tokenURI.replace(
-                        "ipfs://",
-                        "https://ipfs.io/ipfs/"
-                    );
+                if (!ids || ids.length === 0) {
+                    setNfts([]);
+                    return;
                 }
 
-                const metadata = await fetch(tokenURI).then((r) => r.json());
+                const items = await Promise.all(
+                    ids.map(async (id) => {
+                        try {
+                            let tokenURI = await contract.tokenURI(id);
 
-                items.push({
-                    id: tokenId.toString(),
-                    title: metadata.name,
-                    description: metadata.description,
-                    image: metadata.image?.replace(
-                        "ipfs://",
-                        "https://ipfs.io/ipfs/"
-                    ),
-                    rarity: metadata.attributes?.find(a => a.trait_type === "rarity")?.value
-                });
+                            if (tokenURI.startsWith("ipfs://")) {
+                                tokenURI = tokenURI.replace(
+                                    "ipfs://",
+                                    "https://ipfs.io/ipfs/"
+                                );
+                            }
+
+                            const metadata = await fetch(tokenURI).then((r) => r.json());
+
+                            return {
+                                id: id.toString(),
+                                title: metadata.name || "No name",
+                                description: metadata.description || "",
+                                image: metadata.image?.replace(
+                                    "ipfs://",
+                                    "https://ipfs.io/ipfs/"
+                                ),
+                                rarity: metadata.attributes?.find(
+                                    (a) => a.trait_type === "rarity"
+                                )?.value || "Unknown",
+                            };
+                        } catch (err) {
+                            console.error("Errore NFT ID:", id.toString(), err);
+                            return null;
+                        }
+                    })
+                );
+
+                // rimuove eventuali null
+                setNfts(items.filter(Boolean));
+            } catch (err) {
+                console.error("Errore caricamento NFT:", err);
+                setNfts([]);
+            } finally {
+                setLoading(false);
             }
-
-            setNfts(items);
         };
 
         load();
     }, [account]);
 
-    return nfts;
+    return { nfts, loading };
 }

@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import cookieImg from "../../images/close.png";
 
-function Header({ toggleTheme, mode, page, setPage }) {
+function Header({ toggleTheme, mode, page, setPage, setAccountUser }) {
     const theme = useTheme();
     const [account, setAccount] = useState(null);
 
@@ -21,6 +21,7 @@ function Header({ toggleTheme, mode, page, setPage }) {
             const provider = new ethers.BrowserProvider(window.ethereum);
             const accounts = await provider.send("eth_requestAccounts", []);
             setAccount(accounts[0]);
+            setAccountUser(accounts[0]);
         } catch (error) {
             if (error.code === 4001) {
                 console.log("User rejected connection");
