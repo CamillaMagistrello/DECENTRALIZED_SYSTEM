@@ -6,55 +6,102 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract DailyLuck is ERC721, Ownable {
 
-    uint256 public nextNFTId;
-    uint256 public nftMintPrice = 0.01 ether;
+    enum Rarity { COMMON, RARE, ULTRA_RARE }
 
-    mapping(uint256 => string) public nftRarity;
+    uint256 public nextNFTId;
+    uint256 public nftMintPrice = 0.001 ether;
+
+    mapping(uint256 => Rarity) public nftRarity;
     mapping(uint256 => string) private _tokenURIs;
     mapping(address => uint256[]) private _ownedTokens;
 
-    mapping(string => string[]) private metadataURIsByRarity;
-    mapping(string => string[]) private shuffledURIs;
-    mapping(string => uint256) private pointerByRarity;
+    mapping(Rarity => string[]) private shuffledURIs;
+    mapping(Rarity => uint256) private pointerByRarity;
 
     constructor() ERC721("DailyLuck", "LUCK") Ownable() {
 
         string memory baseURI = "ipfs://bafybeidghxrekbru4bbtn7zzyxbiors44jrxjqt7fmlesip6mqd23h4imm/";
 
-        // COMMON
+        // COMMON (1–11)
         for (uint256 i = 1; i <= 11; i++) {
-            metadataURIsByRarity["common"].push(
+            shuffledURIs[Rarity.COMMON].push(
                 string(abi.encodePacked(baseURI, uint2str(i), ".json"))
             );
         }
 
-        // RARE
+        // RARE (12–18)
         for (uint256 i = 12; i <= 18; i++) {
-            metadataURIsByRarity["rare"].push(
+            shuffledURIs[Rarity.RARE].push(
                 string(abi.encodePacked(baseURI, uint2str(i), ".json"))
             );
         }
 
-        // ULTRA RARE
+        // ULTRA RARE (19–20)
         for (uint256 i = 19; i <= 20; i++) {
-            metadataURIsByRarity["ultra_rare"].push(
+            shuffledURIs[Rarity.ULTRA_RARE].push(
                 string(abi.encodePacked(baseURI, uint2str(i), ".json"))
             );
         }
 
-        _initShuffle("common");
-        _initShuffle("rare");
-        _initShuffle("ultra_rare");
+        _shuffle(Rarity.COMMON);
+        _shuffle(Rarity.RARE);
+        _shuffle(Rarity.ULTRA_RARE);
     }
 
+    function _random(uint256 max) internal view returns (uint256) {
+        return uint256(
+            keccak256(
+                abi.encodePacked(
+                    block.timestamp,
+                    block.prevrandao,
+                    msg.sender,
+                    nextNFTId,
+                    gasleft()
+                )
+            )
+        ) % max;
+    }
+
+    function _selectRandomRarity() internal view returns (Rarity) {
+        uint256 r = _random(100);
+
+        if (r < 85) return Rarity.COMMON;
+        else if (r < 95) return Rarity.RARE;
+        else return Rarity.ULTRA_RARE;
+    }
+
+    function _getMetadata(Rarity rarity) internal returns (string memory) {
+        string[] storage arr = shuffledURIs[rarity];
+
+        uint256 pointer = pointerByRarity[rarity];
+        string memory uri = arr[pointer];
+
+        pointerByRarity[rarity] = (pointer + 1) % arr.length;
+        return uri;
+    }
+
+    // SHUFFLE (Fisher-Yates safe)
+    function _shuffle(Rarity rarity) internal {
+        string[] storage arr = shuffledURIs[rarity];
+
+        for (uint256 i = 0; i < arr.length; i++) {
+            uint256 j = i + (_random(arr.length - i));
+
+            string memory temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+
+    // MINT FUNCTION
     function mintDailyLuckNFT() public payable {
         require(msg.value >= nftMintPrice, "Not enough ETH");
 
         uint256 id = nextNFTId;
         nextNFTId++;
 
-        string memory rarity = selectRandomRarity();
-        string memory uri = selectMetadata(rarity);
+        Rarity rarity = _selectRandomRarity();
+        string memory uri = _getMetadata(rarity);
 
         nftRarity[id] = rarity;
         _tokenURIs[id] = uri;
@@ -63,60 +110,7 @@ contract DailyLuck is ERC721, Ownable {
         _safeMint(msg.sender, id);
     }
 
-    function selectMetadata(string memory rarity) internal returns (string memory) {
-        string[] storage arr = shuffledURIs[rarity];
-
-        require(arr.length > 0, "Empty rarity pool");
-
-        uint256 pointer = pointerByRarity[rarity];
-        string memory uri = arr[pointer];
-
-        pointerByRarity[rarity] = (pointer + 1) % arr.length;
-
-        return uri;
-    }
-
-    function _initShuffle(string memory rarity) internal {
-        string[] storage pool = metadataURIsByRarity[rarity];
-
-        require(pool.length > 0, "No metadata for rarity");
-
-        string[] memory temp = new string[](pool.length);
-
-        for (uint256 i = 0; i < pool.length; i++) {
-            temp[i] = pool[i];
-        }
-
-        // Fisher-Yates deterministic-ish shuffle (safe for testnet use)
-        for (uint256 i = 0; i < temp.length; i++) {
-            uint256 j = uint256(
-                keccak256(abi.encodePacked(block.prevrandao, i, rarity))
-            ) % temp.length;
-
-            (temp[i], temp[j]) = (temp[j], temp[i]);
-        }
-
-        delete shuffledURIs[rarity];
-
-        for (uint256 i = 0; i < temp.length; i++) {
-            shuffledURIs[rarity].push(temp[i]);
-        }
-
-        pointerByRarity[rarity] = 0;
-    }
-
-    function selectRandomRarity() internal view returns (string memory) {
-        uint256 r = uint256(
-            keccak256(
-                abi.encodePacked(block.prevrandao, msg.sender, nextNFTId)
-            )
-        ) % 100;
-
-        if (r < 85) return "common";
-        else if (r < 95) return "rare";
-        else return "ultra_rare";
-    }
-
+    // VIEW FUNCTIONS
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         return _tokenURIs[tokenId];
     }
@@ -130,6 +124,7 @@ contract DailyLuck is ERC721, Ownable {
         require(success, "Withdraw failed");
     }
 
+    // UTILS
     function uint2str(uint256 value) internal pure returns (string memory) {
         if (value == 0) return "0";
 

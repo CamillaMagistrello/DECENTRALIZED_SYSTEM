@@ -2,21 +2,24 @@ import hardhat from "hardhat";
 const { ethers } = hardhat;
 
 async function main() {
-    const [user1, user2] = await ethers.getSigners();
-    const users = [user1, user2];
+    const [user1, user2, user3] = await ethers.getSigners();
+    let users = [user1, user2, user3];
 
-    /*
-    console.log("Deploying DailyLuck contract...");
-    const DailyLuck = await ethers.getContractFactory("DailyLuck");
-    const dailyLuck = await DailyLuck.deploy();
-    await dailyLuck.waitForDeployment();
-    console.log("DailyLuck deployed to:", dailyLuck.target);
-    */
+    const test = true;
+    let dailyLuck;
+    if(test){
+        console.log("Deploying DailyLuck contract...");
+        const DailyLuck = await ethers.getContractFactory("DailyLuck");
+        dailyLuck = await DailyLuck.deploy();
+        await dailyLuck.waitForDeployment();
+        console.log("DailyLuck deployed to:", dailyLuck.target);
+    }else{
+        const contractAddress = "0x354486dC52654B2254eF69Aa26183359ACa117B9"; 
+        const DailyLuck = await ethers.getContractFactory("DailyLuck"); 
+        dailyLuck = await DailyLuck.attach(contractAddress);
+        users = [user1];
 
-    const contractAddress = "0xb79D802Cca97C8C46071C4A1403124242A74b5d7"; 
-    const DailyLuck = await ethers.getContractFactory("DailyLuck"); 
-    const dailyLuck = await DailyLuck.attach(contractAddress); 
-   
+    }
     const provider = ethers.provider;
 
     for (const user of users) {
