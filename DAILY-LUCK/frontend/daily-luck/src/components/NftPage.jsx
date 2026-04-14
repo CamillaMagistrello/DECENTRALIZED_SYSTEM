@@ -1,5 +1,4 @@
-import { Box, Typography, Container, Grid, Modal } from "@mui/material";
-import { useState } from "react";
+import { Box, Typography, Container, Grid } from "@mui/material";
 import NftCard from "./NftCard";
 import useNfts from "../utils/NftUtils";
 

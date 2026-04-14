@@ -151,7 +151,7 @@ function Mint() {
                     </Typography>
                 </Paper>
             )}
-            {status === "revealed" || status === "error" && (
+            {(status === "revealed" || status === "error") && (
                 <Button sx={{ mt: 3 }} 
                     onClick={() => {
                         setStatus("idle");
