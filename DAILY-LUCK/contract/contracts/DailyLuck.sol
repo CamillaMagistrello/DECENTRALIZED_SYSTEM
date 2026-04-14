@@ -9,7 +9,7 @@ contract DailyLuck is ERC721, Ownable {
     enum Rarity { COMMON, RARE, ULTRA_RARE }
 
     uint256 public nextNFTId;
-    uint256 public nftMintPrice = 0.001 ether;
+    uint256 public nftMintPrice = 0.01 ether;
 
     mapping(uint256 => Rarity) public nftRarity;
     mapping(uint256 => string) private _tokenURIs;

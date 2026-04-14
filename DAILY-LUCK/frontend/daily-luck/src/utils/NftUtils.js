@@ -3,24 +3,16 @@ import { ethers } from "ethers";
 import * as Constants from "./Constants";
 import contractAbi from "./contract.json";
 
-const IPFS_GATEWAYS = [
-    "https://cloudflare-ipfs.com/ipfs/",
-    "https://gateway.pinata.cloud/ipfs/",
-    "https://ipfs.io/ipfs/"
-];
-
-const formatIpfs = (url, index = 0) => {
-    if (!url) return "";
-    if (url.startsWith("ipfs://")) {
-        return url.replace("ipfs://", IPFS_GATEWAYS[index]);
-    }
-    return url;
-};
+const IPFS_GATEWAYS = "https://ipfs.io/ipfs/";
 
 const fetchWithFallback = async (url) => {
     for (let i = 0; i < IPFS_GATEWAYS.length; i++) {
         try {
-            const res = await fetch(formatIpfs(url, i));
+            if (!url) return "";
+            if (url.startsWith("ipfs://")) {
+                return url.replace("ipfs://", IPFS_GATEWAYS);
+            }
+            const res = await fetch(url);
             if (!res.ok) throw new Error("bad response");
             return await res.json();
         } catch (e) {
@@ -67,13 +59,11 @@ export default function useNfts(account) {
                 const metadataList = await Promise.all(tokenURIs.map((uri) => fetchWithFallback(uri)));
 
                 const items = metadataList.map((metadata, index) => ({
-                    id: ids[index].toString(),
+                    idNft: ids[index].toString(),
+                    id: metadata.id,
                     title: metadata.name || "No name",
                     description: metadata.description || "",
-                    image: metadata.image?.replace(
-                        "ipfs://",
-                        "https://cloudflare-ipfs.com/ipfs/"
-                    ),
+                    image: metadata.image,
                     rarity: metadata.attributes?.find((a) => a.trait_type === "rarity")?.value || "Unknown",
                 }));
 

@@ -26,8 +26,8 @@ export default function NftPage({ account }) {
                 </Typography>
                 <Grid container spacing={2} size={12}>
                     {Array.from({ length: totalSlots }).map((_, i) => {
-                        const nft = nfts?.nfts.find((n) =>  
-                            parseInt(n.image.split("/").pop().split(".")[0]) === i
+                        const nft = nfts?.nfts?.find((n) =>  
+                            parseInt(n?.image?.split("/")?.pop()?.split(".")[0]) === i
                         );
                         const unlocked = Boolean(nft ? true : false);
                         console.log(nft)
