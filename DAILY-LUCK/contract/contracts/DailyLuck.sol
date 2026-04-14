@@ -20,7 +20,7 @@ contract DailyLuck is ERC721, Ownable {
 
     constructor() ERC721("DailyLuck", "LUCK") Ownable() {
 
-        string memory baseURI = "ipfs://bafybeidghxrekbru4bbtn7zzyxbiors44jrxjqt7fmlesip6mqd23h4imm/";
+        string memory baseURI = "ipfs://bafybeifiog2j2pz2wca2mrgzrtgmii55f3pdmqjnuadvzhw7up5y3vxqcu/";
 
         // COMMON (1–11)
         for (uint256 i = 1; i <= 11; i++) {

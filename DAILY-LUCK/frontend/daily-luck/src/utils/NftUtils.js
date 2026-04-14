@@ -3,76 +3,82 @@ import { ethers } from "ethers";
 import * as Constants from "./Constants";
 import contractAbi from "./contract.json";
 
+const IPFS_GATEWAYS = [
+    "https://cloudflare-ipfs.com/ipfs/",
+    "https://gateway.pinata.cloud/ipfs/",
+    "https://ipfs.io/ipfs/"
+];
+
+const formatIpfs = (url, index = 0) => {
+    if (!url) return "";
+    if (url.startsWith("ipfs://")) {
+        return url.replace("ipfs://", IPFS_GATEWAYS[index]);
+    }
+    return url;
+};
+
+const fetchWithFallback = async (url) => {
+    for (let i = 0; i < IPFS_GATEWAYS.length; i++) {
+        try {
+            const res = await fetch(formatIpfs(url, i));
+            if (!res.ok) throw new Error("bad response");
+            return await res.json();
+        } catch (e) {
+            console.warn("IPFS gateway fallito:", i);
+        }
+    }
+    throw new Error("Tutti i gateway IPFS falliti");
+};
+
 export default function useNfts(account) {
     const [nfts, setNfts] = useState([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!account) return;
-
         const load = async () => {
             try {
                 setLoading(true);
-                const chainId = await window.ethereum.request({
-                    method: "wallet_switchEthereumChain",
-                    params: [{ chainId: "0xaa36a7" }], // Sepolia
-                });
-                const provider = new ethers.BrowserProvider(window.ethereum);
-                const network = await provider.getNetwork();
-                console.log("network:", network);
-                const signer = await provider.getSigner();
+
+                const cacheKey = `nfts-${account}`;
+                const cached = localStorage.getItem(cacheKey);
+
+                if (cached) {
+                    setNfts(JSON.parse(cached));
+                    setLoading(false);
+                    return;
+                }
+                const provider = new ethers.JsonRpcProvider("https://sepolia.infura.io/v3/" + Constants.INFURA_KEY);
                 const contract = new ethers.Contract(
                     Constants.CONTRACT,
                     contractAbi,
-                    signer
+                    provider
                 );
-
                 console.log("Account:", account);
-                
-
                 const ids = await contract.getUserNFTs(account);
-                console.log("NFT IDs:", ids);
 
                 if (!ids || ids.length === 0) {
                     setNfts([]);
+                    setLoading(false);
                     return;
                 }
 
-                const items = await Promise.all(
-                    ids.map(async (id) => {
-                        try {
-                            let tokenURI = await contract.tokenURI(id);
+                const tokenURIs = await Promise.all(ids.map((id) => contract.tokenURI(id)));
+                const metadataList = await Promise.all(tokenURIs.map((uri) => fetchWithFallback(uri)));
 
-                            if (tokenURI.startsWith("ipfs://")) {
-                                tokenURI = tokenURI.replace(
-                                    "ipfs://",
-                                    "https://ipfs.io/ipfs/"
-                                );
-                            }
+                const items = metadataList.map((metadata, index) => ({
+                    id: ids[index].toString(),
+                    title: metadata.name || "No name",
+                    description: metadata.description || "",
+                    image: metadata.image?.replace(
+                        "ipfs://",
+                        "https://cloudflare-ipfs.com/ipfs/"
+                    ),
+                    rarity: metadata.attributes?.find((a) => a.trait_type === "rarity")?.value || "Unknown",
+                }));
 
-                            const metadata = await fetch(tokenURI).then((r) => r.json());
-
-                            return {
-                                id: id.toString(),
-                                title: metadata.name || "No name",
-                                description: metadata.description || "",
-                                image: metadata.image?.replace(
-                                    "ipfs://",
-                                    "https://ipfs.io/ipfs/"
-                                ),
-                                rarity: metadata.attributes?.find(
-                                    (a) => a.trait_type === "rarity"
-                                )?.value || "Unknown",
-                            };
-                        } catch (err) {
-                            console.error("Errore NFT ID:", id.toString(), err);
-                            return null;
-                        }
-                    })
-                );
-
-                // rimuove eventuali null
-                setNfts(items.filter(Boolean));
+                setNfts(items);
+                localStorage.setItem(cacheKey, JSON.stringify(items));
             } catch (err) {
                 console.error("Errore caricamento NFT:", err);
                 setNfts([]);

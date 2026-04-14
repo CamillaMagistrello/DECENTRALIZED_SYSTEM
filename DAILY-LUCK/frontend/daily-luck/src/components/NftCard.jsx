@@ -1,8 +1,10 @@
 import { Paper, Box, Typography } from "@mui/material";
 import cookieImg from "../images/close.png";
 
-function NftCard({ nft, unlocked, index, onClick }) {
+function NftCard({ nft, unlocked }) {
     const rarity = nft?.rarity;
+
+    const formatIpfs = (url) => url.replace("ipfs://", "https://ipfs.io/ipfs/");
 
     const getGlow = () => {
         if (!unlocked) return "none";
@@ -13,7 +15,6 @@ function NftCard({ nft, unlocked, index, onClick }) {
 
     return (
         <Paper
-            onClick={() => unlocked && onClick?.(nft, index)}
             elevation={4}
             sx={{
                 p: 3,
@@ -71,7 +72,7 @@ function NftCard({ nft, unlocked, index, onClick }) {
                 {unlocked ? (
                     <Box
                         component="img"
-                        src={nft.image || cookieImg}
+                        src={formatIpfs(nft.image) || cookieImg}
                         alt={nft.title}
                         sx={{
                             maxHeight: 170,
