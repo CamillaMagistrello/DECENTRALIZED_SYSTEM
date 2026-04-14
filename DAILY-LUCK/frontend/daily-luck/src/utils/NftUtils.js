@@ -3,23 +3,18 @@ import { ethers } from "ethers";
 import * as Constants from "./Constants";
 import contractAbi from "./contract.json";
 
-const IPFS_GATEWAYS = "https://ipfs.io/ipfs/";
-
 const fetchWithFallback = async (url) => {
-    for (let i = 0; i < IPFS_GATEWAYS.length; i++) {
-        try {
-            if (!url) return "";
-            if (url.startsWith("ipfs://")) {
-                return url.replace("ipfs://", IPFS_GATEWAYS);
-            }
-            const res = await fetch(url);
-            if (!res.ok) throw new Error("bad response");
-            return await res.json();
-        } catch (e) {
-            console.warn("IPFS gateway fallito:", i);
+    try {
+        if (!url) return "";
+        if (url.startsWith("ipfs://")) {
+            return url.replace("ipfs://", Constants.FORMAT_IPFS);
         }
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("bad response");
+        return await res.json();
+    } catch (e) {
+        console.warn("IPFS gateway fallito:" + Constants.FORMAT_IPFS);
     }
-    throw new Error("Tutti i gateway IPFS falliti");
 };
 
 export default function useNfts(account) {

@@ -4,8 +4,8 @@ import { ethers } from "ethers";
 import closedCookie from "../images/close.png";
 import openedCookie from "../images/open.png";
 import contractAbi from "../utils/contract.json";
-import * as Constants from "../utils/Constants";
 import AlertCustom from "./common/AlertCustom";
+import * as Constants from "../utils/Constants";
 
 function Mint() {
     const theme = useTheme();
@@ -58,7 +58,7 @@ function Mint() {
             if (tokenURI.startsWith("ipfs://")) {
                 tokenURI = tokenURI.replace(
                     "ipfs://",
-                    "https://ipfs.io/ipfs/"
+                    Constants.FORMAT_IPFS
                 );
             }
 
@@ -69,7 +69,7 @@ function Mint() {
                 id: metadata.id,
                 image: metadata.image?.replace(
                     "ipfs://",
-                    "https://ipfs.io/ipfs/"
+                    Constants.FORMAT_IPFS
                 ),
                 text: metadata.description || "",
                 title: metadata.name || "",
