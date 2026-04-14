@@ -46,15 +46,16 @@ function Mint() {
             const tx = await contract.mintDailyLuckNFT({
                 value: ethers.parseEther("0.01"),
             });
-
+            console.log("minting...")
             await tx.wait();
 
             const userAddress = await signer.getAddress();
             const ids = await contract.getUserNFTs(userAddress);
             const lastId = ids[ids.length - 1];
-
+            console.log("userAddress", userAddress)
+            
             let tokenURI = await contract.tokenURI(lastId);
-
+            console.log("tokenURI ", tokenURI)
             if (tokenURI.startsWith("ipfs://")) {
                 tokenURI = tokenURI.replace(
                     "ipfs://",
@@ -63,7 +64,7 @@ function Mint() {
             }
 
             const metadata = await fetch(tokenURI).then((r) => r.json());
-
+            console.log("metadata ", metadata)
             setNft({
                 idNft: lastId.toString(),
                 id: metadata.id,
