@@ -1,40 +1,21 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
+import { getCache, setCache, prefetchImage } from "./nftCache";
 import contractAbi from "./contract.json";
 import * as Constants from "./Constants";
-import { getCache, setCache, prefetchImage } from "./nftCache";
-
-const GATEWAYS = [
-    "https://cloudflare-ipfs.com/ipfs/",
-    "https://dweb.link/ipfs/",
-    "https://ipfs.io/ipfs/"
-];
-
-const resolveIPFS = (url) => {
-    if (!url) return url;
-
-    if (url.startsWith("ipfs://")) {
-        const hash = url.replace("ipfs://", "");
-        return GATEWAYS.map((g) => g + hash);
-    }
-
-    return [url];
-};
 
 const fetchWithFallback = async (url) => {
-    const urls = resolveIPFS(url);
-
-    for (let i = 0; i < urls.length; i++) {
-        try {
-            const res = await fetch(urls[i]);
-            if (!res.ok) throw new Error("bad response");
-            return await res.json();
-        } catch (e) {
-            console.warn("IPFS failed:", urls[i]);
+    try {
+        if (!url) return "";
+        if (url.startsWith("ipfs://")) {
+            return url.replace("ipfs://", Constants.FORMAT_IPFS);
         }
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("bad response");
+        return await res.json();
+    } catch (e) {
+        console.warn("IPFS gateway fallito:" + Constants.FORMAT_IPFS);
     }
-
-    throw new Error("All IPFS gateways failed");
 };
 
 export default function useNfts(account) {
@@ -53,24 +34,19 @@ export default function useNfts(account) {
         const load = async () => {
             try {
                 setLoading(true);
-
                 const provider = new ethers.JsonRpcProvider(
                     "https://sepolia.infura.io/v3/" + Constants.INFURA_KEY
                 );
-
                 const contract = new ethers.Contract(
                     Constants.CONTRACT,
                     contractAbi,
                     provider
                 );
-
                 const ids = await contract.getUserNFTs(account);
-
                 if (!ids.length) {
                     setNfts([]);
                     return;
                 }
-
                 const tokenURIs = await Promise.all(
                     ids.map((id) => contract.tokenURI(id))
                 );
@@ -80,9 +56,12 @@ export default function useNfts(account) {
                 );
 
                 const items = metadataList.map((m, i) => {
-                    const image = resolveIPFS(m.image)[0];
-
+                    const image = fetchWithFallback(m.image)[0];
                     prefetchImage(image);
+
+                    const attributesMap = Object.fromEntries(
+                        (m.attributes || []).map((a) => [a.trait_type, a.value])
+                    );
 
                     return {
                         idNft: ids[i].toString(),
@@ -90,10 +69,8 @@ export default function useNfts(account) {
                         title: m.name || "No name",
                         description: m.description || "",
                         image,
-                        rarity:
-                            m.attributes?.find(
-                                (a) => a.trait_type === "rarity"
-                            )?.value || "Unknown",
+                        luck: attributesMap.luck || "Unknown",
+                        rarity: attributesMap.rarity || "Unknown",
                     };
                 });
 
