@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Box, Typography, useTheme, Paper } from "@mui/material";
-import { ethers } from "ethers";
 import closedCookie from "../images/close.png";
 import openedCookie from "../images/open.png";
-import contractAbi from "../utils/contract.json";
 import AlertCustom from "./common/AlertCustom";
-import * as Constants from "../utils/Constants";
+import { mintNFT } from "../utils/NftUtils";
 
 function Mint() {
     const theme = useTheme();
@@ -32,68 +30,13 @@ function Mint() {
 
     const handleMint = async () => {
         try {
-            if (!window.ethereum) {
-                showAlert("MetaMask non installato", "error");
-                return;
-            }
-            const accounts = await window.ethereum.request({
-                method: "eth_requestAccounts",
-            });
-            if (!accounts || accounts.length === 0) {
-                showAlert("Wallet non connesso", "error");
-                return;
-            }
             setStatus("minting");
-
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
-            const contract = new ethers.Contract(
-                Constants.CONTRACT,
-                contractAbi,
-                signer
-            );
-
-            const tx = await contract.mintDailyLuckNFT({
-                value: ethers.parseEther("0.01"),
-            });
-
-            await tx.wait();
-
-            const userAddress = await signer.getAddress();
-            const ids = await contract.getUserNFTs(userAddress);
-            const lastId = ids[ids.length - 1];
-
-            let tokenURI = await contract.tokenURI(lastId);
-
-            if (tokenURI.startsWith("ipfs://")) {
-                tokenURI = tokenURI.replace("ipfs://", Constants.FORMAT_IPFS);
-            }
-
-            const res = await fetch(tokenURI);
-            const metadata = await res.json();
-
-            const attributesMap = Object.fromEntries(
-                (metadata.attributes || []).map((a) => [
-                    a.trait_type,
-                    a.value
-                ])
-            );
-
-            setNft({
-                idNft: lastId.toString(),
-                id: metadata.id,
-                image: metadata.image?.replace("ipfs://", Constants.FORMAT_IPFS),
-                text: metadata.description || "",
-                title: metadata.name || "",
-                luck: attributesMap.luck || "Unknown",
-                rarity: attributesMap.rarity || "Unknown",
-            });
-
+            const nftData = await mintNFT();
+            setNft(nftData);
             setStatus("revealed");
             setOpen(true);
-
         } catch (err) {
-            console.error("MINT ERROR:", err);
+            console.error(err);
             showAlert("Errore durante il mint", "error");
             setStatus("error");
         }
@@ -134,19 +77,16 @@ function Mint() {
             </Paper>
 
             {status !== "revealed" && (
-                <Box
-                    component="img"
-                    src={status === "idle" ? closedCookie : openedCookie}
-                    alt="cookie"
+                <Box component="img" src={status === "idle" ? closedCookie : openedCookie} alt="cookie"
                     onClick={handleMint}
-                    sx={{
+                    sx={{ 
                         width: 200,
                         cursor: "pointer",
                         objectFit: "contain",
                         transition: "transform 0.4s ease",
                         "&:hover": {
                             transform: "rotate(12deg) scale(1.1)",
-                        },
+                        }, 
                         animation: status === "minting" ? "shake 0.9s infinite" : "none",
                     }}
                 />
@@ -158,19 +98,19 @@ function Mint() {
                     setStatus("idle");
                     setNft(null);
                 }}>
-                    <Paper elevation={10} sx={{ p: 4, borderRadius: 4, textAlign: "center", maxWidth: 340, background: "linear-gradient(145deg, #1e1e1e, #2a2a2a)", color: "#fff", animation: "pop 0.4s ease" }}>
+                    <Paper elevation={10} sx={{ p: 4, borderRadius: 4, textAlign: "center", maxWidth: 600, background: "linear-gradient(145deg, #1e1e1e, #2a2a2a)", color: "#fff", animation: "pop 0.4s ease" }}>
                         <Box component="img" src={nft.image} alt="nft" sx={{ width: "100%", mb: 2, borderRadius: 2 }}/>
-                        <Typography variant="h6" fontWeight="bold">
-                            {nft.title}
+                        <Typography variant="h4" fontWeight="bold">
+                            {nft.title.toUpperCase()}
                         </Typography>
-                        <Typography sx={{ mt: 1, opacity: 0.8 }}>
-                            {nft.text}
+                        <Typography sx={{ mt: 1, opacity: 0.8, fontSize: 23 }}>
+                            {nft.description}
                         </Typography>
-                        <Typography sx={{ mt: 2, fontSize: 12, fontWeight: "bold", 
+                        <Typography sx={{ mt: 2, fontSize: 20, fontWeight: "bold", 
                         color: nft.luck === "good" ? "#4caf50" : nft.luck === "bad" ? "#f44336" : "#aaa" }}>
                             Lucky: {nft.luck}
                         </Typography>
-                        <Typography sx={{ mt: 2, fontSize: 10, opacity: 0.5 }}>
+                        <Typography sx={{ mt: 2, fontSize: 20, opacity: 0.5 }}>
                             click anywhere to close
                         </Typography>
                     </Paper>

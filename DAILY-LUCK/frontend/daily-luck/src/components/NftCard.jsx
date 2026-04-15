@@ -5,7 +5,7 @@ import * as Constants from "../utils/Constants";
 function NftCard({ nft, unlocked }) {
 
     const rarity = nft?.rarity;
-    const formatIpfs = (url) => url.replace("ipfs://", Constants.FORMAT_IPFS);
+    const formatIpfs = (url) => url?.replace("ipfs://", Constants.FORMAT_IPFS);
 
     const getGlow = () => {
         if (!unlocked) return "none";
