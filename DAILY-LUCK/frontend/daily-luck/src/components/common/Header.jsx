@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import cookieImg from "../../images/close.png";
+import { normalizeAddress, setCache } from "../../utils/nftCache";
 
 function Header({ toggleTheme, mode, page, setPage, setAccountUser, setUserNfts, setLoading }) {
     const theme = useTheme();

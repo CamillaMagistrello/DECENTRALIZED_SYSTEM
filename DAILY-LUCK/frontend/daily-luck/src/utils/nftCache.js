@@ -20,3 +20,8 @@ export const prefetchImage = (url) => {
     const img = new Image();
     img.src = url;
 };
+
+export const normalizeAddress = (addr) => {
+    if (!addr) return null;
+    return addr.toLowerCase();
+};

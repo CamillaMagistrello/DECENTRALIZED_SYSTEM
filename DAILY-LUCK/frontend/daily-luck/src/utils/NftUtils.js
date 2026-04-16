@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { getCache, setCache } from "./nftCache";
+import { getCache, normalizeAddress, setCache } from "./nftCache";
 import contractAbi from "./contract.json";
 import * as Constants from "./Constants";
 
@@ -89,9 +89,7 @@ export const mintNFT = async () => {
     const tx = await contract.mintDailyLuckNFT({
         value: ethers.parseEther("0.01"),
     });
-    console.log("TX SENT:", tx.hash);
     await tx.wait();
-    console.log("TX MINED:", tx.hash);
     const signer = await getSigner();
     const address = await signer.getAddress();
 
@@ -102,22 +100,22 @@ export const mintNFT = async () => {
     const metadata = await fetchJson(tokenURI);
 
     const nft = mapMetadata(metadata, lastId);
-
-    const cached = getCache(address) || [];
-    setCache(address, [...cached, nft]);
-
+    const key = normalizeAddress(address);
+    setCache(key, getUserNFTs(address));
     return nft;
 };
 
 export const getUserNFTs = async (account) => {
     if (!account) return [];
     const cached = getCache(account);
+    console.log("cache for ", account, cached);
     if (cached) return cached;
     const contract = getReadContract();
     const ids = await contract.getUserNFTs(account);
 
     if (!ids.length) {
-        setCache(account, []);
+        const key = normalizeAddress(account);
+        setCache(key, []);
         return [];
     }
     const tokenURIs = await Promise.all(
@@ -130,7 +128,6 @@ export const getUserNFTs = async (account) => {
         mapMetadata(m, ids[i])
     );
     const groupedMap = {};
-
     for (const nft of items) {
         const key = nft.id;
 
@@ -146,6 +143,7 @@ export const getUserNFTs = async (account) => {
 
     const grouped = Object.values(groupedMap);
     console.log("grouped ", grouped);
-    setCache(account, grouped);
+    const key = normalizeAddress(account);
+    setCache(key, grouped);
     return grouped;
 };
