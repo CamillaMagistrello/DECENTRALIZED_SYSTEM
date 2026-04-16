@@ -12,6 +12,7 @@ function App() {
   const [page, setPage] = useState("home");
   const [account, setAccount] = useState(null);
   const [userNfts, setUserNfts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const theme = useMemo(() => getTheme(mode), [mode]);
 
@@ -20,6 +21,7 @@ function App() {
   };
 
   console.log("account ", account);
+  console.log("userNfts ", userNfts);
 
   return (
     <ThemeProvider theme={theme}>
@@ -32,9 +34,10 @@ function App() {
         setPage={setPage} 
         setAccountUser={setAccount} 
         setUserNfts={setUserNfts}
+        setLoading={setLoading}
       />
-      {page === "home" && <Home page={page} setPage={setPage}/>}
-      {page === "nfts" && <NftPage userNfts={userNfts}/>}
+      {page === "home" && <Home setPage={setPage}/>}
+      {page === "nfts" && <NftPage userNfts={userNfts} account={account} loading={loading} />}
       {page === "mint" && <Mint setUserNfts={setUserNfts} account={account}/>}
     </ThemeProvider>
   );

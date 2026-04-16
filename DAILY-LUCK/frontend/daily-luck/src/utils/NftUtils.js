@@ -45,13 +45,13 @@ const fetchJson = async (url) => {
     return await res.json();
 };
 
-const mapMetadata = (m, id) => {
+const mapMetadata = (m, tokenId) => {
     const attributesMap = Object.fromEntries(
         (m.attributes || []).map((a) => [a.trait_type, a.value])
     );
 
     return {
-        idNft: id?.toString(),
+        tokenId: tokenId.toString(),
         id: m.id,
         title: m.name || "No name",
         description: m.description || "",
@@ -65,6 +65,7 @@ const getReadContract = () => {
     const provider = new ethers.JsonRpcProvider(
         "https://sepolia.infura.io/v3/" + Constants.INFURA_KEY
     );
+
     return new ethers.Contract(
         Constants.CONTRACT,
         contractAbi,
@@ -74,6 +75,7 @@ const getReadContract = () => {
 
 const getWriteContract = async () => {
     const signer = await getSigner();
+
     return new ethers.Contract(
         Constants.CONTRACT,
         contractAbi,
@@ -83,19 +85,24 @@ const getWriteContract = async () => {
 
 export const mintNFT = async () => {
     const contract = await getWriteContract();
+
     const tx = await contract.mintDailyLuckNFT({
         value: ethers.parseEther("0.01"),
     });
-
+    console.log("TX SENT:", tx.hash);
     await tx.wait();
-
+    console.log("TX MINED:", tx.hash);
     const signer = await getSigner();
     const address = await signer.getAddress();
+
     const ids = await contract.getUserNFTs(address);
     const lastId = ids[ids.length - 1];
+
     const tokenURI = await contract.tokenURI(lastId);
     const metadata = await fetchJson(tokenURI);
+
     const nft = mapMetadata(metadata, lastId);
+
     const cached = getCache(address) || [];
     setCache(address, [...cached, nft]);
 
@@ -122,22 +129,23 @@ export const getUserNFTs = async (account) => {
     const items = metadataList.map((m, i) =>
         mapMetadata(m, ids[i])
     );
-    setCache(account, items);
-    return items;
-};
+    const groupedMap = {};
 
-export const groupNfts = (nfts) => {
-    const map = {};
-    nfts.forEach((nft) => {
+    for (const nft of items) {
         const key = nft.id;
-        if (!map[key]) {
-            map[key] = {
+
+        if (!groupedMap[key]) {
+            groupedMap[key] = {
                 ...nft,
                 quantity: 1,
             };
         } else {
-            map[key].quantity += 1;
+            groupedMap[key].quantity += 1;
         }
-    });
-    return Object.values(map);
+    }
+
+    const grouped = Object.values(groupedMap);
+    console.log("grouped ", grouped);
+    setCache(account, grouped);
+    return grouped;
 };

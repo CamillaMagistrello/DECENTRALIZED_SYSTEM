@@ -39,7 +39,7 @@ function Mint({ setUserNfts, account }) {
             setUserNfts(updated);
         } catch (err) {
             console.error(err);
-            showAlert("Errore durante il mint", "error");
+            showAlert("Error minting NFT", "error");
             setStatus("error");
         }
     };
@@ -77,24 +77,29 @@ function Mint({ setUserNfts, account }) {
                     Cost: {MINT_PRICE}
                 </Typography>
             </Paper>
-
-            {status !== "revealed" && (
-                <Box component="img" src={status === "idle" ? closedCookie : openedCookie} alt="cookie"
-                    onClick={handleMint}
-                    sx={{ 
-                        width: 200,
-                        cursor: "pointer",
-                        objectFit: "contain",
-                        transition: "transform 0.4s ease",
-                        "&:hover": {
-                            transform: "rotate(12deg) scale(1.1)",
-                        }, 
-                        animation: status === "minting" ? "shake 0.9s infinite" : "none",
-                    }}
-                />
-            )}
+                {account ?          
+                    status !== "revealed" && (
+                    <Box component="img" src={status === "idle" || status === "error" ? closedCookie : openedCookie} alt="cookie"
+                        onClick={handleMint}
+                        sx={{ 
+                            width: 200,
+                            cursor: "pointer",
+                            objectFit: "contain",
+                            transition: "transform 0.4s ease",
+                            "&:hover": {
+                                transform: "rotate(12deg) scale(1.1)",
+                            }, 
+                            animation: status === "minting" ? "shake 0.9s infinite" : "none",
+                        }}
+                    />
+                )
+                :
+                    <Typography variant="h6" color="error">
+                        Please connect your wallet to mint.
+                    </Typography>
+            }
             {open && nft && (
-                <Box sx={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", backgroundColor: "rgba(0,0,0,0.85)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 9999, animation: "fadeIn 0.3s ease", cursor: "pointer" }}
+                <Box sx={{ position: "fixed", top: 1, left: 0, width: "100vw", height: "100vh", backgroundColor: "rgba(0,0,0,0.85)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1, animation: "fadeIn 0.3s ease", cursor: "pointer" }}
                 onClick={() => {
                     setOpen(false);
                     setStatus("idle");

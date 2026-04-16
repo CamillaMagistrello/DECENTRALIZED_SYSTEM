@@ -1,9 +1,9 @@
-import { Box, Typography, Container, Grid } from "@mui/material";
+import { Box, Typography, Container, Grid, CircularProgress } from "@mui/material";
 import NftCard from "./NftCard";
 
-export default function NftPage({ userNfts }) {
+export default function NftPage({ userNfts, account, loading }) {
     const totalSlots = 20;
-    console.log("userNfts ", userNfts);
+    
     return (
         <Box sx={{ py: 6, width: "100%", display: "flex", justifyContent: "center" }}>
             <Container maxWidth={false}
@@ -21,21 +21,29 @@ export default function NftPage({ userNfts }) {
                 <Typography sx={{ opacity: 0.6, mb: 4 }}>
                     20 possible outcomes. Your collection depends on what you've unlocked.
                 </Typography>
+                {loading ? 
+                    <CircularProgress sx={{display: 'block', margin: '0 auto'}}/>
+                    : 
+                    account ? 
+                        <Grid container spacing={2}>
+                            {Array.from({ length: totalSlots }).map((_, i) => {
+                                const nft = userNfts?.find((n) =>
+                                    parseInt(n?.image?.split("/")?.pop()?.split(".")[0]) === i
+                                );
+                                const unlocked = Boolean(nft);
 
-                <Grid container spacing={2}>
-                    {Array.from({ length: totalSlots }).map((_, i) => {
-                        const nft = userNfts?.find((n) =>
-                            parseInt(n?.image?.split("/")?.pop()?.split(".")[0]) === i
-                        );
-                        const unlocked = Boolean(nft);
-
-                        return (
-                            <Grid size={3}>
-                                <NftCard nft={nft} unlocked={unlocked} />
-                            </Grid>
-                        );
-                    })}
-                </Grid>
+                                return (
+                                    <Grid size={3}>
+                                        <NftCard nft={nft} unlocked={unlocked} />
+                                    </Grid>
+                                );
+                            })}
+                        </Grid>
+                        :
+                        <Typography variant="h6" color="error">
+                            Please connect your wallet to view your NFTs.
+                        </Typography>    
+                }
             </Container>
         </Box>
     );

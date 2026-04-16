@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { connectWallet, getUserNFTs, getCurrentAccount, groupNfts } from "../../utils/NftUtils";
+import { connectWallet, getUserNFTs, getCurrentAccount } from "../../utils/NftUtils";
 import { useTheme } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import cookieImg from "../../images/close.png";
 
-function Header({ toggleTheme, mode, page, setPage, setAccountUser, setUserNfts }) {
+function Header({ toggleTheme, mode, page, setPage, setAccountUser, setUserNfts, setLoading }) {
     const theme = useTheme();
     const [account, setAccount] = useState(null);
 
@@ -29,15 +29,17 @@ function Header({ toggleTheme, mode, page, setPage, setAccountUser, setUserNfts 
 
     const handleConnect = async () => {
         try {
+            setLoading(true);
             const { account } = await connectWallet();
             setAccount(account);
             setAccountUser(account);
             const nfts = await getUserNFTs(account);
-            const grouped = groupNfts(nfts);
-            setUserNfts(grouped);
+            setUserNfts(nfts);
+            setLoading(false);
         } catch (error) {
             if (error.code === 4001) return;
             console.error(error);
+            setLoading(false);
         }
     };
 
