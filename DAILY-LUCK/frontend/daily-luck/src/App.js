@@ -11,6 +11,7 @@ function App() {
   const [mode, setMode] = useState("dark");
   const [page, setPage] = useState("home");
   const [account, setAccount] = useState(null);
+  const [userNfts, setUserNfts] = useState([]);
 
   const theme = useMemo(() => getTheme(mode), [mode]);
 
@@ -24,10 +25,17 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
 
-      <Header mode={mode} toggleTheme={toggleTheme} page={page} setPage={setPage} setAccountUser={setAccount} />
+      <Header 
+        mode={mode} 
+        toggleTheme={toggleTheme} 
+        page={page} 
+        setPage={setPage} 
+        setAccountUser={setAccount} 
+        setUserNfts={setUserNfts}
+      />
       {page === "home" && <Home page={page} setPage={setPage}/>}
-      {page === "nfts" && <NftPage account={account} />}
-      {page === "mint" && <Mint/>}
+      {page === "nfts" && <NftPage userNfts={userNfts}/>}
+      {page === "mint" && <Mint setUserNfts={setUserNfts} account={account}/>}
     </ThemeProvider>
   );
 }

@@ -3,6 +3,34 @@ import { getCache, setCache } from "./nftCache";
 import contractAbi from "./contract.json";
 import * as Constants from "./Constants";
 
+export const connectWallet = async () => {
+    if (!window.ethereum) throw new Error("MetaMask missing");
+
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const accounts = await provider.send("eth_requestAccounts", []);
+
+    return {
+        provider,
+        account: accounts[0],
+    };
+};
+
+export const getCurrentAccount = async () => {
+    if (!window.ethereum) return null;
+
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const accounts = await provider.send("eth_accounts", []);
+
+    return accounts.length ? accounts[0] : null;
+};
+
+export const getSigner = async () => {
+    if (!window.ethereum) throw new Error("MetaMask missing");
+
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    return await provider.getSigner();
+};
+
 const resolveIpfs = (url) => {
     if (!url) return "";
     if (url.startsWith("ipfs://")) {
@@ -33,50 +61,61 @@ const mapMetadata = (m, id) => {
     };
 };
 
-export const mintNFT = async () => {
-    if (!window.ethereum) throw new Error("MetaMask missing");
+const getReadContract = () => {
+    const provider = new ethers.JsonRpcProvider(
+        "https://sepolia.infura.io/v3/" + Constants.INFURA_KEY
+    );
+    return new ethers.Contract(
+        Constants.CONTRACT,
+        contractAbi,
+        provider
+    );
+};
 
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-
-    const contract = new ethers.Contract(
+const getWriteContract = async () => {
+    const signer = await getSigner();
+    return new ethers.Contract(
         Constants.CONTRACT,
         contractAbi,
         signer
     );
+};
 
+export const mintNFT = async () => {
+    const contract = await getWriteContract();
     const tx = await contract.mintDailyLuckNFT({
         value: ethers.parseEther("0.01"),
     });
 
     await tx.wait();
 
+    const signer = await getSigner();
     const address = await signer.getAddress();
     const ids = await contract.getUserNFTs(address);
     const lastId = ids[ids.length - 1];
-    let tokenURI = await contract.tokenURI(lastId);
+    const tokenURI = await contract.tokenURI(lastId);
     const metadata = await fetchJson(tokenURI);
-    return mapMetadata(metadata, lastId);
+    const nft = mapMetadata(metadata, lastId);
+    const cached = getCache(address) || [];
+    setCache(address, [...cached, nft]);
+
+    return nft;
 };
 
 export const getUserNFTs = async (account) => {
+    if (!account) return [];
     const cached = getCache(account);
     if (cached) return cached;
-    const provider = new ethers.JsonRpcProvider(
-        "https://sepolia.infura.io/v3/" + Constants.INFURA_KEY
-    );
-    console.log("provider:", provider);
-    const contract = new ethers.Contract(
-        Constants.CONTRACT,
-        contractAbi,
-        provider
-    );
+    const contract = getReadContract();
     const ids = await contract.getUserNFTs(account);
-    if (!ids.length) return [];
+
+    if (!ids.length) {
+        setCache(account, []);
+        return [];
+    }
     const tokenURIs = await Promise.all(
         ids.map((id) => contract.tokenURI(id))
     );
-    console.log("Token URIs:", tokenURIs);
     const metadataList = await Promise.all(
         tokenURIs.map((uri) => fetchJson(uri))
     );
@@ -85,4 +124,20 @@ export const getUserNFTs = async (account) => {
     );
     setCache(account, items);
     return items;
+};
+
+export const groupNfts = (nfts) => {
+    const map = {};
+    nfts.forEach((nft) => {
+        const key = nft.id;
+        if (!map[key]) {
+            map[key] = {
+                ...nft,
+                quantity: 1,
+            };
+        } else {
+            map[key].quantity += 1;
+        }
+    });
+    return Object.values(map);
 };

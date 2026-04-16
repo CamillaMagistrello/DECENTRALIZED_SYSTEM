@@ -1,31 +1,9 @@
 import { Box, Typography, Container, Grid } from "@mui/material";
-import { getUserNFTs } from "../utils/NftUtils";
-import { useEffect, useState } from "react";
 import NftCard from "./NftCard";
 
-export default function NftPage({ account }) {
-    const [nfts, setNfts] = useState([]);
-    const [loading, setLoading] = useState(false);
+export default function NftPage({ userNfts }) {
     const totalSlots = 20;
-
-    useEffect(() => {
-        if (!account) return;
-        const load = async () => {
-            try {
-                setLoading(true);
-                const data = await getUserNFTs(account);
-                setNfts(data);
-            } catch (err) {
-                console.error(err);
-                setNfts([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        load();
-    }, [account]);
-
+    console.log("userNfts ", userNfts);
     return (
         <Box sx={{ py: 6, width: "100%", display: "flex", justifyContent: "center" }}>
             <Container maxWidth={false}
@@ -43,14 +21,13 @@ export default function NftPage({ account }) {
                 <Typography sx={{ opacity: 0.6, mb: 4 }}>
                     20 possible outcomes. Your collection depends on what you've unlocked.
                 </Typography>
-                {console.log(nfts)}
+
                 <Grid container spacing={2}>
                     {Array.from({ length: totalSlots }).map((_, i) => {
-                        const nft = nfts?.find((n) =>  
+                        const nft = userNfts?.find((n) =>
                             parseInt(n?.image?.split("/")?.pop()?.split(".")[0]) === i
                         );
-                        const unlocked = Boolean(nft ? true : false);
-                        console.log(nft)
+                        const unlocked = Boolean(nft);
 
                         return (
                             <Grid size={3}>

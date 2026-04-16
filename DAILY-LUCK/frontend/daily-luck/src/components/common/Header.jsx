@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ethers } from "ethers";
+import { useEffect, useState } from "react";
+import { connectWallet, getUserNFTs, getCurrentAccount, groupNfts } from "../../utils/NftUtils";
 import { useTheme } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -8,27 +8,43 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import cookieImg from "../../images/close.png";
 
-function Header({ toggleTheme, mode, page, setPage, setAccountUser }) {
+function Header({ toggleTheme, mode, page, setPage, setAccountUser, setUserNfts }) {
     const theme = useTheme();
     const [account, setAccount] = useState(null);
 
-    const connectWallet = async () => {
+    useEffect(() => {
+        const init = async () => {
+            const acc = await getCurrentAccount();
+
+            if (acc) {
+                setAccount(acc);
+                setAccountUser(acc);
+
+                const nfts = await getUserNFTs(acc);
+                setUserNfts(nfts);
+            }
+        };
+        init();
+    }, [setAccountUser, setUserNfts]);
+
+    const handleConnect = async () => {
         try {
-            if (!window.ethereum) {
-                alert("Install MetaMask");
-                return;
-            }
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const accounts = await provider.send("eth_requestAccounts", []);
-            setAccount(accounts[0]);
-            setAccountUser(accounts[0]);
+            const { account } = await connectWallet();
+            setAccount(account);
+            setAccountUser(account);
+            const nfts = await getUserNFTs(account);
+            const grouped = groupNfts(nfts);
+            setUserNfts(grouped);
         } catch (error) {
-            if (error.code === 4001) {
-                console.log("User rejected connection");
-                return;
-            }
-            console.error("Wallet connection error:", error);
+            if (error.code === 4001) return;
+            console.error(error);
         }
+    };
+
+    const handleDisconnect = () => {
+        setAccount(null);
+        setAccountUser(null);
+        setUserNfts([]);
     };
 
     const formatAddress = (addr) => addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : "";
@@ -75,11 +91,12 @@ function Header({ toggleTheme, mode, page, setPage, setAccountUser }) {
                     </Button>
 
                     {account ? (
-                        <Box sx={{ px: 2, py: 0.5, borderRadius: 2, background: theme.palette.action.hover, fontFamily: "monospace", fontSize: "0.85rem"}}>
+                        <Button sx={{ px: 2, py: 0.5, borderRadius: 2, background: theme.palette.action.hover, fontFamily: "monospace", fontSize: "0.85rem"}}
+                        onClick={handleDisconnect}>
                             {formatAddress(account)}
-                        </Box>
+                        </Button>
                     ) : (
-                        <Button variant="contained" onClick={connectWallet}>
+                        <Button variant="contained" onClick={handleConnect}>
                         Wallet
                         </Button>
                     )}

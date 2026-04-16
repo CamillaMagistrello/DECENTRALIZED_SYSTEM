@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Box, Typography, useTheme, Paper } from "@mui/material";
+import { getUserNFTs, mintNFT } from "../utils/NftUtils";
 import closedCookie from "../images/close.png";
 import openedCookie from "../images/open.png";
 import AlertCustom from "./common/AlertCustom";
-import { mintNFT } from "../utils/NftUtils";
 
-function Mint() {
+function Mint({ setUserNfts, account }) {
     const theme = useTheme();
 
     const [alert, setAlert] = useState({
@@ -35,6 +35,8 @@ function Mint() {
             setNft(nftData);
             setStatus("revealed");
             setOpen(true);
+            const updated = await getUserNFTs(account);
+            setUserNfts(updated);
         } catch (err) {
             console.error(err);
             showAlert("Errore durante il mint", "error");

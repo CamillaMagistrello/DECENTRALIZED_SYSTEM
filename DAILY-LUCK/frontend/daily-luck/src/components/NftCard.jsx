@@ -85,13 +85,18 @@ function NftCard({ nft, unlocked }) {
                     <Typography fontSize={44}>🔒</Typography>
                 )}
             </Box>
-
             <Typography fontWeight="bold">
                 {unlocked ? nft.title : "Locked"}
             </Typography>
-
             <Typography variant="body2" sx={{ opacity: 0.7 }}>
                 {unlocked ? nft.description : "Not revealed yet"}
+            </Typography>
+            <Typography sx={{ mt: 2, fontSize: 12, fontWeight: "bold", 
+            color: nft?.luck === "good" ? "#4caf50" : nft?.luck === "bad" ? "#f44336" : "#aaa" }}>
+                {nft?.luck ? `Luck: ${nft.luck}` : ""}
+            </Typography>
+            <Typography sx={{ mt: 2, fontSize: 12, fontWeight: "bold" }}>
+                {nft?.quantity > 1 ? `x${nft.quantity}` : ""}
             </Typography>
         </Paper>
     );
