@@ -1,8 +1,15 @@
 import { Box, Typography, Container, Grid, CircularProgress } from "@mui/material";
 import NftCard from "./NftCard";
+import { useEffect, useState } from "react";
 
 export default function NftPage({ userNfts, account, loading }) {
     const totalSlots = 20;
+    const [nft, setNft] = useState([]);
+
+    useEffect(() => {
+        setNft(userNfts);
+    }, [userNfts]);
+
     
     return (
         <Box sx={{ py: 6, width: "100%", display: "flex", justifyContent: "center" }}>
@@ -26,15 +33,16 @@ export default function NftPage({ userNfts, account, loading }) {
                     : 
                     account ? 
                         <Grid container spacing={2}>
+                            {console.log(userNfts)}
                             {Array.from({ length: totalSlots }).map((_, i) => {
-                                const nft = userNfts?.find((n) =>
+                                let nftFind = nft?.find((n) =>
                                     parseInt(n?.image?.split("/")?.pop()?.split(".")[0]) === i
                                 );
-                                const unlocked = Boolean(nft);
+                                const unlocked = Boolean(nftFind);
 
                                 return (
                                     <Grid size={3}>
-                                        <NftCard nft={nft} unlocked={unlocked} />
+                                        <NftCard nft={nftFind} unlocked={unlocked} />
                                     </Grid>
                                 );
                             })}

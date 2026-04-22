@@ -5,7 +5,7 @@ import closedCookie from "../images/close.png";
 import openedCookie from "../images/open.png";
 import AlertCustom from "./common/AlertCustom";
 
-function Mint({ setUserNfts, account }) {
+function Mint({ setUserNfts, account, setLoading }) {
     const theme = useTheme();
 
     const [alert, setAlert] = useState({
@@ -30,6 +30,7 @@ function Mint({ setUserNfts, account }) {
 
     const handleMint = async () => {
         try {
+            setLoading(true);
             setStatus("minting");
             const nftData = await mintNFT();
             setNft(nftData);
@@ -37,10 +38,12 @@ function Mint({ setUserNfts, account }) {
             setOpen(true);
             const updated = await getUserNFTs(account);
             setUserNfts(updated);
+            setLoading(false);
         } catch (err) {
             console.error(err);
             showAlert("Error minting NFT", "error");
             setStatus("error");
+            setLoading(false);
         }
     };
 
