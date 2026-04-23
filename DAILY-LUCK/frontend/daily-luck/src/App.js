@@ -38,7 +38,7 @@ function App() {
       />
       {page === "home" && <Home setPage={setPage}/>}
       {page === "nfts" && <NftPage userNfts={userNfts} account={account} loading={loading} />}
-      {page === "mint" && <Mint setUserNfts={setUserNfts} account={account}/>}
+      {page === "mint" && <Mint setUserNfts={setUserNfts} account={account} setLoading={setLoading}/>}
     </ThemeProvider>
   );
 }
