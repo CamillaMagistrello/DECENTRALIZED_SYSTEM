@@ -14,7 +14,7 @@ async function main() {
         await dailyLuck.waitForDeployment();
         console.log("DailyLuck deployed to:", dailyLuck.target);
     }else{
-        const contractAddress = "0xEc2B5D26DbAFACF6743CFBD1d3e4038d25C8a2FB"; 
+        const contractAddress = "0x901880F29D3A1625C73D9A5E5Af244c550cc1711"; 
         const DailyLuck = await ethers.getContractFactory("DailyLuck"); 
         dailyLuck = await DailyLuck.attach(contractAddress);
         users = [user1];

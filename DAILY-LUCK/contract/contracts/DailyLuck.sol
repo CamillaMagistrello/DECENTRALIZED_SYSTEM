@@ -15,8 +15,7 @@ contract DailyLuck is ERC721, Ownable {
     mapping(uint256 => string) private _tokenURIs;
     mapping(address => uint256[]) private _ownedTokens;
 
-    mapping(Rarity => string[]) private shuffledURIs;
-    mapping(Rarity => uint256) private pointerByRarity;
+    mapping(Rarity => string[]) private urisByRarity;
 
     constructor() ERC721("DailyLuck", "LUCK") Ownable() {
 
@@ -24,39 +23,35 @@ contract DailyLuck is ERC721, Ownable {
 
         // COMMON (1–11)
         for (uint256 i = 1; i <= 11; i++) {
-            shuffledURIs[Rarity.COMMON].push(
+            urisByRarity[Rarity.COMMON].push(
                 string(abi.encodePacked(baseURI, uint2str(i), ".json"))
             );
         }
 
         // RARE (12–18)
         for (uint256 i = 12; i <= 18; i++) {
-            shuffledURIs[Rarity.RARE].push(
+            urisByRarity[Rarity.RARE].push(
                 string(abi.encodePacked(baseURI, uint2str(i), ".json"))
             );
         }
 
         // ULTRA RARE (19–20)
         for (uint256 i = 19; i <= 20; i++) {
-            shuffledURIs[Rarity.ULTRA_RARE].push(
+            urisByRarity[Rarity.ULTRA_RARE].push(
                 string(abi.encodePacked(baseURI, uint2str(i), ".json"))
             );
         }
-
-        _shuffle(Rarity.COMMON);
-        _shuffle(Rarity.RARE);
-        _shuffle(Rarity.ULTRA_RARE);
     }
 
     function _random(uint256 max) internal view returns (uint256) {
         return uint256(
             keccak256(
                 abi.encodePacked(
-                    block.timestamp,
                     block.prevrandao,
+                    block.timestamp,
                     msg.sender,
-                    nextNFTId,
-                    gasleft()
+                    address(this),
+                    nextNFTId
                 )
             )
         ) % max;
@@ -70,27 +65,10 @@ contract DailyLuck is ERC721, Ownable {
         else return Rarity.ULTRA_RARE;
     }
 
-    function _getMetadata(Rarity rarity) internal returns (string memory) {
-        string[] storage arr = shuffledURIs[rarity];
-
-        uint256 pointer = pointerByRarity[rarity];
-        string memory uri = arr[pointer];
-
-        pointerByRarity[rarity] = (pointer + 1) % arr.length;
-        return uri;
-    }
-
-    // SHUFFLE (Fisher-Yates safe)
-    function _shuffle(Rarity rarity) internal {
-        string[] storage arr = shuffledURIs[rarity];
-
-        for (uint256 i = 0; i < arr.length; i++) {
-            uint256 j = i + (_random(arr.length - i));
-
-            string memory temp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = temp;
-        }
+    function _getMetadata(Rarity rarity) internal view returns (string memory) {
+        string[] storage arr = urisByRarity[rarity];
+        uint256 index = _random(arr.length);
+        return arr[index];
     }
 
     // MINT FUNCTION
