@@ -14,9 +14,10 @@ function Mint({ setUserNfts, account, setLoading }) {
         severity: "info",
     });
 
-    const [status, setStatus] = useState("idle");
+    const [status, setStatus] = useState("idle"); 
     const [nft, setNft] = useState(null);
     const [open, setOpen] = useState(false);
+    const [isMinting, setIsMinting] = useState(false);
 
     const MINT_PRICE = "0.01 ETH";
 
@@ -29,21 +30,28 @@ function Mint({ setUserNfts, account, setLoading }) {
     };
 
     const handleMint = async () => {
+        if (!account || isMinting) return;
         try {
+            setIsMinting(true);
             setLoading(true);
             setStatus("minting");
             const nftData = await mintNFT();
             setNft(nftData);
             setStatus("revealed");
             setOpen(true);
+            // Wait for blockchain propagation
+            await new Promise((r) => setTimeout(r, 1200));
+            // Refresh user NFTs
             const updated = await getUserNFTs(account);
             setUserNfts(updated);
-            setLoading(false);
+
         } catch (err) {
             console.error(err);
             showAlert("Error minting NFT", "error");
             setStatus("error");
+        } finally {
             setLoading(false);
+            setIsMinting(false);
         }
     };
 
@@ -86,12 +94,12 @@ function Mint({ setUserNfts, account, setLoading }) {
                         onClick={handleMint}
                         sx={{ 
                             width: 200,
-                            cursor: "pointer",
-                            objectFit: "contain",
-                            transition: "transform 0.4s ease",
+                            cursor: isMinting ? "not-allowed" : "pointer",
+                            opacity: isMinting ? 0.6 : 1,
+                            transition: "transform 0.3s ease",
                             "&:hover": {
-                                transform: "rotate(12deg) scale(1.1)",
-                            }, 
+                                transform: isMinting ? "none" : "rotate(10deg) scale(1.05)",
+                            },
                             animation: status === "minting" ? "shake 0.9s infinite" : "none",
                         }}
                     />
@@ -135,16 +143,6 @@ function Mint({ setUserNfts, account, setLoading }) {
                     50% { transform: rotate(-5deg); }
                     75% { transform: rotate(3deg); }
                     100% { transform: rotate(0deg); }
-                }
-
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-
-                @keyframes pop {
-                    0% { transform: scale(0.6); opacity: 0; }
-                    100% { transform: scale(1); opacity: 1; }
                 }
                 `}
             </style>
