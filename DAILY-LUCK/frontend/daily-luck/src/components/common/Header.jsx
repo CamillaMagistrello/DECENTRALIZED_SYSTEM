@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { connectWallet, getUserNFTs, getCurrentAccount } from "../../utils/NftUtils";
 import { useTheme } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
@@ -11,19 +11,24 @@ import cookieImg from "../../images/close.png";
 function Header({ toggleTheme, mode, page, setPage, setAccountUser, setUserNfts, setLoading }) {
     const theme = useTheme();
     const [account, setAccount] = useState(null);
+    const didInit = useRef(false);
 
     useEffect(() => {
+        if (didInit.current) return;
+        didInit.current = true;
+
         const init = async () => {
             const acc = await getCurrentAccount();
 
-            if (acc) {
-                setAccount(acc);
-                setAccountUser(acc);
+            if (!acc) return;
 
-                const nfts = await getUserNFTs(acc);
-                setUserNfts(nfts);
-            }
+            setAccount(acc);
+            setAccountUser(acc);
+
+            const nfts = await getUserNFTs(acc);
+            setUserNfts(nfts);
         };
+
         init();
     }, [setAccountUser, setUserNfts]);
 
