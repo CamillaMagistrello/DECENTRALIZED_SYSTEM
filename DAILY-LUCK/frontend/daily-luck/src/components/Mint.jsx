@@ -40,7 +40,7 @@ function Mint({ setUserNfts, account, setLoading }) {
             setStatus("revealed");
             setOpen(true);
             // Wait for blockchain propagation
-            await new Promise((r) => setTimeout(r, 1200));
+            await new Promise((r) => setTimeout(r, 12000));
             // Refresh user NFTs
             const updated = await getUserNFTs(account);
             setUserNfts(updated);
