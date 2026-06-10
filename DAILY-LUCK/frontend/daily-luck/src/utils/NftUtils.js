@@ -115,49 +115,35 @@ export const mintNFT = async () => {
 
 export const getUserNFTs = async (account) => {
     if (!account) return [];
-
     const key = normalizeAddress(account);
     const cached = getCache(key);
-
     if (cached != null) return cached;
-
     const contract = getReadContract();
     const ids = await contract.getUserNFTs(account);
-
     if (!ids.length) {
         setCache(key, []);
         return [];
     }
-
-    const tokenURIs = await Promise.all(
-        ids.map((id) => contract.tokenURI(id))
+    const items = await Promise.all(
+        ids.map(async (id) => {
+            const uri = await contract.tokenURI(id);
+            const metadata = await fetchJson(uri);
+            return mapMetadata(metadata, id);
+        })
     );
-
-    const metadataList = await Promise.all(
-        tokenURIs.map((uri) => fetchJson(uri))
-    );
-
-    const items = metadataList.map((m, i) =>
-        mapMetadata(m, ids[i])
-    );
-
+    console.log("Fetched NFTs:", items);
     const groupedMap = {};
-
     for (const nft of items) {
-        const groupKey = nft.id;
-
-        if (!groupedMap[groupKey]) {
-            groupedMap[groupKey] = {
-                ...nft,
-                quantity: 1,
-            };
+        const key = nft.id;
+        console.log("Processing NFT:", nft);
+        if (!groupedMap[key]) {
+            groupedMap[key] = { ...nft, quantity: 1 };
         } else {
-            groupedMap[groupKey].quantity += 1;
+            groupedMap[key].quantity++;
         }
     }
-
     const grouped = Object.values(groupedMap);
-
-    setCache(key, grouped);
+    console.log("Fetched NFTs grouped:", grouped);
+    setCache(normalizeAddress(account), grouped);
     return grouped;
 };
