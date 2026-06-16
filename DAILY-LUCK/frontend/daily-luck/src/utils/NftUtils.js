@@ -85,9 +85,14 @@ const getWriteContract = async () => {
 
 export const mintNFT = async () => {
     const contract = await getWriteContract();
+    console.log("Contract:", contract.target);
+    console.log("Function exists:", typeof contract.mintDailyLuckNFT);
     const tx = await contract.mintDailyLuckNFT({
         value: ethers.parseEther("0.01"),
+        gasLimit: 500000
     });
+    console.log("TX:", tx);
+    console.log(tx.gasLimit.toString());
     await tx.wait();
     const signer = await getSigner();
     const address = await signer.getAddress();
